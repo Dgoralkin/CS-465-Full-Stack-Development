@@ -59,3 +59,13 @@ typings/
 
 # next.js build output
 .next
+
+# Ignore all VScode dirs
+.vscode/*
+# Eclude the following json files:
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+# Ignore all files ending with .code-workspace
+*.code-workspace 
