@@ -4,13 +4,20 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+// Setup routes for page navigation
+var indexRouter = require('./app_server/routes/index');         // Update the path for the homepage
+var usersRouter = require('./app_server/routes/users');         // Update the path for the users page
+var travelRouter = require('./app_server/routes/travel');       // Update the path for the travel page
+var handelbars = require('hbs');                                // Enable handlebars to render in multipal pages
 
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+app.set('views', path.join(__dirname, 'app_server', 'views'));  // Update the path for the new app_server dir
+
+// register the call to enable partials handlebars:
+handelbars.registerPartials(path.join(__dirname, 'app_server', 'views', 'partials'));
+
 app.set('view engine', 'hbs');
 
 app.use(logger('dev'));
@@ -19,8 +26,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// Activate the page
+app.use('/', indexRouter);            // Go to homepage.
+app.use('/users', usersRouter);       // Go to users.
+app.use('/travel', travelRouter);     // Go to travel page.
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
