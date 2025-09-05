@@ -1,5 +1,8 @@
-var express = require('express');
-var router = express.Router();
+// Routing should map URL requests to controllers
+
+const express = require('express');
+const router = express.Router();
+// Where the router looks for the URL:
 const ctrlMain = require('../controllers/main');
 
 /* GET homepage. */

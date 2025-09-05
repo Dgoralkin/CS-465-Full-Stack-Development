@@ -1,5 +1,7 @@
-var express = require('express');
-var router = express.Router();
+// Routing should map URL requests to controllers
+
+const express = require('express');
+const router = express.Router();
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
