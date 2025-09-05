@@ -2,30 +2,31 @@
 <!-- header -->
 <div id="header">
     <div id="logo">
-    <a href="index.html"><img src="images/logo.png" alt="LOGO" height="100" width="200"/></a>
+    <a href="/"><img src="images/logo.png" alt="LOGO" height="100" width="200"/></a>
     </div>
     <div id="navigation">
         <ul>
-            <li class="selected">
-                <a href="index.html">Home</a>
+            <!-- Upate the class with the "selected" style -->
+            <li class="{{#if (eq currentPage '/')}}selected{{/if}}">
+                <a href="/">Home</a>
             </li>
-            <li>
-                <a href="travel.html">Travel</a>
+            <li class="{{#if (eq currentPage 'travel')}}selected{{/if}}">
+                <a href="/travel">Travel</a>
             </li>
-            <li>
-                <a href="rooms.html">Rooms</a>
+            <li class="{{#if (eq currentPage 'rooms')}}selected{{/if}}">
+                <a href="/rooms">Rooms</a>
             </li>
-            <li>
-                <a href="meals.html">Meals</a>
+            <li class="{{#if (eq currentPage 'meals')}}selected{{/if}}">
+                <a href="/meals">Meals</a>
             </li>
-            <li>
-                <a href="news.html">News</a>
+            <li class="{{#if (eq currentPage 'news')}}selected{{/if}}">
+                <a href="/news">News</a>
             </li>
-            <li>
-                <a href="about.html">About</a>
+            <li class="{{#if (eq currentPage 'about')}}selected{{/if}}">
+                <a href="/about">About</a>
             </li>
-            <li>
-                <a href="contact.html">Contact</a>
+            <li class="{{#if (eq currentPage 'contact')}}selected{{/if}}">
+                <a href="/contact">Contact</a>
             </li>
         </ul>
     </div>

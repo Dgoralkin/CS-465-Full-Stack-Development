@@ -6,19 +6,18 @@ const logger = require('morgan');
 
 // Setup routes for page navigation
 const indexRouter = require('./app_server/routes/index');         // Update the path for the homepage
-const travelRouter = require('./app_server/routes/travel');       // Update the path for the travel page
-const roomsRouter = require('./app_server/routes/rooms');         // Update the path for the rooms page
-const mealsRouter = require('./app_server/routes/meals');         // Update the path for the meals page
-const newsRouter = require('./app_server/routes/news');           // Update the path for the news page
-const aboutRouter = require('./app_server/routes/about');         // Update the path for the about page
-const contactRouter = require('./app_server/routes/contact');     // Update the path for the contact page
-const usersRouter = require('./app_server/routes/users');         // Update the path for the users page
+const pagesRouter  = require('./app_server/routes/pages');        // Update the path for all the other pages
 const handelbars = require('hbs');                                // Enable handlebars to render in multipal pages
+
+// Enable helper for handelbars
+handelbars.registerHelper('eq', function(a, b) {
+  return a === b;
+});
 
 const app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'app_server', 'views'));  // Update the path for the new app_server dir
+app.set('views', path.join(__dirname, 'app_server', 'views'));    // Update the path for the new app_server dir
 
 // register the call to enable partials handlebars:
 handelbars.registerPartials(path.join(__dirname, 'app_server', 'views', 'partials'));
@@ -30,15 +29,9 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Activate the pages
-app.use('/', indexRouter);            // Go to homepage.
-app.use('/travel', travelRouter);     // Go to travel page.
-app.use('/rooms', roomsRouter);       // Go to rooms page.
-app.use('/meals', mealsRouter);       // Go to meals page.
-app.use('/news', newsRouter);         // Go to news page.
-app.use('/about', aboutRouter);       // Go to about page.
-app.use('/contact', contactRouter);   // Go to contact page.
-app.use('/users', usersRouter);       // Go to users.
+// Activate the homepage page and all other pages
+app.use('/', indexRouter);            // Go to homepage (index).
+app.use('/', pagesRouter);            // Go to all other pages.
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

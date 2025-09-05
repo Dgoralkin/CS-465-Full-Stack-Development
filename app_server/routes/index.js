@@ -3,7 +3,7 @@
 const express = require('express');
 const router = express.Router();
 // Where the router looks for the URL:
-const ctrlMain = require('../controllers/main');
+const ctrlMain = require('../controllers');
 
 /* GET homepage. */
 router.get('/', ctrlMain.index);
