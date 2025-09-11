@@ -6,7 +6,12 @@ const logger = require('morgan');
 
 // Setup routes for page navigation
 const indexRouter = require('./app_server/routes/index');         // Update the path for the homepage
-const pagesRouter  = require('./app_server/routes/pages');        // Update the path for all the other pages
+const travelRouter = require('./app_server/routes/travel');       // Update the path for the travel page
+const roomRouter = require('./app_server/routes/rooms');           // Update the path for the room page
+const mealsRouter = require('./app_server/routes/meals');         // Update the path for the meals page
+const newsRouter = require('./app_server/routes/news');           // Update the path for the news page
+const aboutRouter = require('./app_server/routes/about');         // Update the path for the about page
+const contactRouter  = require('./app_server/routes/contact');    // Update the path for the contact us page
 const handelbars = require('hbs');                                // Enable handlebars to render in multipal pages
 
 // Enable helper for handelbars
@@ -31,7 +36,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Activate the homepage page and all other pages
 app.use('/', indexRouter);            // Go to homepage (index).
-app.use('/', pagesRouter);            // Go to all other pages.
+app.use('/', travelRouter);           // Go to the travel page.
+app.use('/', roomRouter);             // Go to the room page.
+app.use('/', mealsRouter);            // Go to the room page.
+app.use('/', newsRouter);             // Go to the news page.
+app.use('/', aboutRouter);            // Go to the about page.
+app.use('/', contactRouter);          // Go to all contact us pages.
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
