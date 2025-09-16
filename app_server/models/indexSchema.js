@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 
 // Define the index collection schema
 const indexSchema = new mongoose.Schema({
-    heading: { type: String, required: true, index: true },
+    heading: { type: String, required: true, index: true },    // Use article name code as index
     heading_text: {type: String, required: true },
     Latest_Blog: {type: String, required: true },
     // arrays of objects for Blog_Entries

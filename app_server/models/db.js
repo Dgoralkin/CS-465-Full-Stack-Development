@@ -49,4 +49,6 @@ console.log('Connection state:', mongoose.connection.readyState);
 require('./tripsSchema');
 require('./indexSchema');
 require('./roomsSchema');
+require('./mealsSchema');
+require('./contactSchema');
 module.exports = mongoose;
