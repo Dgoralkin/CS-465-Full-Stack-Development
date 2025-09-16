@@ -3,6 +3,8 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+// Require MongoDB: we won’t need to hook into any of its method.
+require('./app_server/models/db');
 
 // Setup routes for page navigation
 const indexRouter = require('./app_server/routes/index');         // Update the path for the homepage
