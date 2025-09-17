@@ -3,11 +3,21 @@
 
 const mongoose = require('mongoose');
 
-// Define the host
-const host = process.env.DB_HOST || '127.0.0.1';
+// Define the host (for a local DB)
+// const host = process.env.DB_HOST || '127.0.0.1';
 
-// Add the database connection and connect:
-const dbURI = `mongodb://${host}/travlr`;
+// Add the database connection and connect to a local DB:
+// const dbURI = `mongodb://${host}/travlr`;
+
+// ====================================================================================================================== //
+//                                                                                                                        //
+//                          FIXME: remove connection string before deployment                                             //
+// const dbURI = process.env.ATLAS_DB_HOST || 'mongodb+srv://g______n:P_______!@cluster0.td8gcls.mongodb.net/travlr';    //
+//                                                                                                                        //
+// ====================================================================================================================== //
+
+// Connect to the Atlas DB.
+const dbURI = process.env.ATLAS_DB_HOST;
 
 // Async function to connect with try/catch
 async function connectDB() {
