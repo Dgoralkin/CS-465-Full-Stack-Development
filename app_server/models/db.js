@@ -50,5 +50,6 @@ require('./tripsSchema');
 require('./indexSchema');
 require('./roomsSchema');
 require('./mealsSchema');
+require('./aboutSchema');
 require('./contactSchema');
 module.exports = mongoose;
