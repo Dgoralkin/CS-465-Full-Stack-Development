@@ -12,7 +12,7 @@ const mongoose = require('mongoose');
 // ====================================================================================================================== //
 //                                                                                                                        //
 //                          FIXME: remove connection string before deployment                                             //
-// const dbURI = process.env.ATLAS_DB_HOST || 'mongodb+srv://g______n:P_______!@cluster0.td8gcls.mongodb.net/travlr';    //
+// const dbURI = process.env.ATLAS_DB_HOST || 'mongodb+srv://g_______n:P_______!@cluster0.td8gcls.mongodb.net/travlr';    //
 //                                                                                                                        //
 // ====================================================================================================================== //
 
@@ -25,7 +25,8 @@ async function connectDB() {
     // Connect to the database:
     await mongoose.connect(dbURI);
     // Display db connection status
-    console.log(`Mongoose connected to ${dbURI}`);
+    const safeURI = dbURI.split('@')[1]; // strip credentials
+    console.log(`Mongoose connected to ${safeURI}`);
   } catch (err) {
     console.error('Mongoose connection error:', err);
   }
