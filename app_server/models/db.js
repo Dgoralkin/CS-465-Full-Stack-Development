@@ -3,30 +3,27 @@
 
 const mongoose = require('mongoose');
 
-// Define the host (for a local DB)
-// const host = process.env.DB_HOST || '127.0.0.1';
+// Define the localhost (for a local DB)
+const localhost = '127.0.0.1';
 
-// Add the database connection and connect to a local DB:
-// const dbURI = `mongodb://${host}/travlr`;
-
-// ====================================================================================================================== //
-//                                                                                                                        //
-//                          FIXME: remove connection string before deployment                                             //
-// const dbURI = process.env.ATLAS_DB_HOST || 'mongodb+srv://g_______n:P_______!@cluster0.td8gcls.mongodb.net/travlr';    //
-//                                                                                                                        //
-// ====================================================================================================================== //
-
-// Connect to the Atlas DB.
-const dbURI = process.env.ATLAS_DB_HOST;
+// Connect to the Atlas DB by default via env vars.
+// Secondary connection option is via the local host if cannot connect to Atlas remotely.
+const dbURI = process.env.ATLAS_DB_HOST || `mongodb://${localhost}/travlr`;
 
 // Async function to connect with try/catch
 async function connectDB() {
   try {
-    // Connect to the database:
+    // Connect to the database
     await mongoose.connect(dbURI);
-    // Display db connection status
-    const safeURI = dbURI.split('@')[1]; // strip credentials
-    console.log(`Mongoose connected to ${safeURI}`);
+
+    // Log if Atlas or local connected
+    if (process.env.ATLAS_DB_HOST) {
+      // strip credentials before logging
+      const safeURI = dbURI.replace(/\/\/.*@/, '//***:***@');
+      console.log(`Mongoose connected to AtlasDB @ ${safeURI}`);
+    } else {
+      console.log(`Mongoose connected to Local DB @ ${dbURI}`);
+    }
   } catch (err) {
     console.error('Mongoose connection error:', err);
   }
