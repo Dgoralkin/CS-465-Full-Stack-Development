@@ -17,14 +17,10 @@
                   <!-- Loop to parse passed data through controllers res, from the trips.json file -->
                   {{#each trips}}
                   <li>
-                    <a href="travel"><img src="images/{{this.image}}" alt="Img"/></a>
-                    <h2><a href="travel">{{this.name}}</a></h2>
-                    <p>
-                      {{this.description}}
-                    </p>
-                    <p>
-                      {{this.description_details}}
-                    </p>
+                    <a href="/api/travel/{{this.code}}"><img src="images/{{this.image}}" alt="Img"/></a>
+                    <h2><a href="/api/travel/{{this.code}}">{{this.name}}</a></h2>
+                    <p> {{this.description}} </p>
+                    <p> {{this.description_details}} </p>
                   </li>
                   {{/each}}
                 </ul>

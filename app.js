@@ -3,8 +3,8 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-// Require MongoDB: we won’t need to hook into any of its method.
-require('./app_server/models/db');
+// Require MongoDB from the app_api/models folder
+require('./app_api/models/db');
 
 // Setup routes for page navigation
 const indexRouter = require('./app_server/routes/index');         // Update the path for the homepage
@@ -14,7 +14,12 @@ const mealsRouter = require('./app_server/routes/meals');         // Update the 
 const newsRouter = require('./app_server/routes/news');           // Update the path for the news page
 const aboutRouter = require('./app_server/routes/about');         // Update the path for the about page
 const contactRouter  = require('./app_server/routes/contact');    // Update the path for the contact us page
-const handelbars = require('hbs');                                // Enable handlebars to render in multipal pages
+
+// Setup rest api routes for page navigation
+const travelApiRouter = require('./app_api/routes/travel_api');   // Path to the travel api
+
+// Enable handlebars to render in multipal pages
+const handelbars = require('hbs');
 
 // Enable helper for handelbars
 handelbars.registerHelper('eq', function(a, b) {
@@ -36,14 +41,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Activate the homepage page and all other pages
-app.use('/', indexRouter);            // Go to homepage (index).
-app.use('/', travelRouter);           // Go to the travel page.
-app.use('/', roomRouter);             // Go to the room page.
-app.use('/', mealsRouter);            // Go to the room page.
-app.use('/', newsRouter);             // Go to the news page.
-app.use('/', aboutRouter);            // Go to the about page.
-app.use('/', contactRouter);          // Go to all contact us pages.
+// Activate the homepage and all other pages
+app.use('/', indexRouter);                  // Go to homepage (index).
+app.use('/', travelRouter);                 // Go to the travel page.
+app.use('/', roomRouter);                   // Go to the room page.
+app.use('/', mealsRouter);                  // Go to the room page.
+app.use('/', newsRouter);                   // Go to the news page.
+app.use('/', aboutRouter);                  // Go to the about page.
+app.use('/', contactRouter);                // Go to all contact us pages.
+
+// Wire-up api routes to controllers
+app.use('/api', travelApiRouter);           // Trigger the api for the travel page from app_api/routes/travel_api
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
