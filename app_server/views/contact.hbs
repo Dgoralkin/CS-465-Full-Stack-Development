@@ -12,28 +12,33 @@
 						<div>
 							<div id="contact" class="body">
 								<h1>Contact Us</h1>
-								<form action="contact" method="post">
-									<table>
-										<tbody>
-											<tr>
-												<td>Name:</td>
-												<td><input type="text" value="" class="txtfield"></td>
-											</tr> <tr>
-												<td>Email:</td>
-												<td><input type="text" value="" class="txtfield"></td>
-											</tr> <tr>
-												<td>Subject:</td>
-												<td><input type="text" value="" class="txtfield"></td>
-											</tr> <tr>
-												<td class="txtarea">Message:</td>
-												<td><textarea></textarea></td>
-											</tr> <tr>
-												<td></td>
-												<td><input type="submit" value="" class="btn"></td>
-											</tr>
-										</tbody>
-									</table>
+								<form action="/contact" method="post">
+								<table>
+									<tbody>
+									<tr>
+										<td>Name:</td>
+										<td><input type="text" name="name" class="txtfield"></td>
+									</tr>
+									<tr>
+										<td>Email:</td>
+										<td><input type="text" name="email" class="txtfield"></td>
+									</tr>
+									<tr>
+										<td>Subject:</td>
+										<td><input type="text" name="subject" class="txtfield"></td>
+									</tr>
+									<tr>
+										<td class="txtarea">Message:</td>
+										<td><textarea name="message"></textarea></td>
+									</tr>
+									<tr>
+										<td></td>
+										<td><input type="submit" value="Send" class="btn"></td>
+									</tr>
+									</tbody>
+								</table>
 								</form>
+
 								<h2>{{ contact_data.Company_name }}</h2>
 								<p>
 									{{ contact_data.Address }}

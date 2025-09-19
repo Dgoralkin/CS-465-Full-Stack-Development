@@ -16,13 +16,13 @@
 									<ul>
 										<!-- Loop to parse passed data through controllers res, from the news.json file -->
 										{{#each news_data.latest_news}}
-										<li><a href="{{link}}">{{title}}</a></li>
+										<li><a href="/api/news/latest_news/{{title}}">{{title}}</a></li>
 										{{/each}}
 									</ul>
 									<h3>Vaction Tips</h3>
 									<ul>
 										{{#each news_data.vacation_tips}}
-										<li><a href="{{link}}">{{title}}</a></li>
+										<li><a href="/api/news/vacation_tips/{{title}}">{{title}}</a></li>
 										{{/each}}
 									</ul>
 								</div>

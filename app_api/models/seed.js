@@ -1,5 +1,5 @@
 // Run the seed command manually: from main dir to seed the database -> 
-// $ node .\app_server\models\seed
+// $ node .\app_api\models\seed
 
 const fs = require('fs');
 

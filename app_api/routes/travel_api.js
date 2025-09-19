@@ -1,4 +1,4 @@
-// This file routes the process to the travel.js controller in app_api
+// This file routes the process to the travel_api.js controller in app_api
 
 const express = require("express");
 const router = express.Router();

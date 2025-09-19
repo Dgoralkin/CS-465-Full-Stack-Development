@@ -16,8 +16,8 @@
 									<!-- Loop to parse passed data through controllers res, from the rooms.json file -->
 									{{#each rooms_data}}
 									<li>
-										<a href="rooms"><img src="images/{{image}}" alt="Img"></a>
-										<h2><a href="rooms">{{name}}</a></h2>
+										<a href="/api/rooms/{{this.name}}"><img src="images/{{image}}" alt="Img"></a>
+										<h2><a href="/api/rooms/{{this.name}}">{{name}}</a></h2>
 										<p>
 											{{description}}
 										</p>

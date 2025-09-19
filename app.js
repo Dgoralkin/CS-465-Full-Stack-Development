@@ -16,7 +16,12 @@ const aboutRouter = require('./app_server/routes/about');         // Update the 
 const contactRouter  = require('./app_server/routes/contact');    // Update the path for the contact us page
 
 // Setup rest api routes for page navigation
+const indexApiRouter = require('./app_api/routes/index_api');     // Path to the index api
 const travelApiRouter = require('./app_api/routes/travel_api');   // Path to the travel api
+const roomsApiRouter = require('./app_api/routes/rooms_api');     // Path to the rooms api
+const mealsApiRouter = require('./app_api/routes/meals_api');     // Path to the meals api
+const newsApiRouter = require('./app_api/routes/news_api');       // Path to the news api
+const contactUsApiRouter = require('./app_api/routes/contact_api');       // Path to the news api
 
 // Enable handlebars to render in multipal pages
 const handelbars = require('hbs');
@@ -37,7 +42,8 @@ app.set('view engine', 'hbs');
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+// parse application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -51,7 +57,12 @@ app.use('/', aboutRouter);                  // Go to the about page.
 app.use('/', contactRouter);                // Go to all contact us pages.
 
 // Wire-up api routes to controllers
+app.use('/api', indexApiRouter);            // Trigger the api for the index homepage from app_api/routes/index_api
 app.use('/api', travelApiRouter);           // Trigger the api for the travel page from app_api/routes/travel_api
+app.use('/api', roomsApiRouter);            // Trigger the api for the rooms page from app_api/routes/rooms_api
+app.use('/api', mealsApiRouter);            // Trigger the api for the meals page from app_api/routes/meals_api
+app.use('/api', newsApiRouter);             // Trigger the api for the news page from app_api/routes/news_api
+app.use('/api', contactUsApiRouter);        // Trigger the api for the contact us page from app_api/routes/news_api
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
