@@ -3,8 +3,12 @@
 
 // Option 1: Read the trips from the database @travlr.travel collection and store data as strips.
 // Fetch trips data from the database through an API endpoint.
+
 // Create a variable for our API endpoint
-const tripsEndpoint = "http://localhost:3000/api/travel";
+// Use env var to switch between local and deployed on Render modes
+const apiHost = process.env.API_HOST || "http://localhost:3000";
+const tripsEndpoint = `${apiHost}/api/travel`;
+
 const options = {
     method: "GET",
     headers: {Accept: "application/json"}

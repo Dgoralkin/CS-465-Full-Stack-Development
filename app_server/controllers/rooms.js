@@ -5,7 +5,10 @@
 // Fetch data from the database through an API endpoint.
 
 // Create a variable for our API endpoint
-const roomsEndpoint = "http://localhost:3000/api/rooms";
+// Use env var to switch between local and deployed on Render modes
+const apiHost = process.env.API_HOST || "http://localhost:3000";
+const roomsEndpoint = `${apiHost}/api/rooms`;
+
 const options = {
   method: "GET",
   headers: { Accept: "application/json" }

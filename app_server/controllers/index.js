@@ -5,8 +5,12 @@
 // Option 1: Read the articles from the database @travlr.index collection and store data as array.
 // Fetch data from the database through an API endpoint.
 
+
 // Create a variable for our API endpoint
-const indexEndpoint = "http://localhost:3000/api";
+// Use env var to switch between local and deployed on Render modes
+const apiHost = process.env.API_HOST || "http://localhost:3000";
+const indexEndpoint = `${apiHost}/api`;
+
 const options = {
   method: "GET",
   headers: { Accept: "application/json" }

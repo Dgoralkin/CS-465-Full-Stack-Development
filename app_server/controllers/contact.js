@@ -3,7 +3,10 @@
 
 
 // Create a variable for our API endpoint
-const contactEndpoint = "http://localhost:3000/api/contact";
+// Use env var to switch between local and deployed on Render modes
+const apiHost = process.env.API_HOST || "http://localhost:3000";
+const contactEndpoint = `${apiHost}/api/contact`;
+
 const option1 = {
   method: "GET",
   headers: { Accept: "application/json" }
