@@ -4,7 +4,7 @@
 
 // Create a variable for our API endpoint
 const contactEndpoint = "http://localhost:3000/api/contact";
-const options = {
+const option1 = {
   method: "GET",
   headers: { Accept: "application/json" }
 };
@@ -15,7 +15,7 @@ const getContactUs = async (req, res, next) => {
 
   try {
     // Fetch results from the database (backend API URL)
-    const response = await fetch(contactEndpoint, options);
+    const response = await fetch(contactEndpoint, option1);
 
     // Throw an error if the response has a bad status (404 or 500)
     if (!response.ok) {
@@ -35,7 +35,7 @@ const getContactUs = async (req, res, next) => {
       message = "No trips were found in our database.";
     }
 
-    // Response 200 OK, Render the "rooms.js" page with data from the DB.meal.
+    // Response 200 OK, Render the "contact.js" page with data from the DB.contact.
     res.render("contact", {
       title: "Contact Us - Travlr Getaways",
       currentPage: "contact",
@@ -49,5 +49,5 @@ const getContactUs = async (req, res, next) => {
 };
 
 module.exports = {
-    getContactUs,
+    getContactUs
 };
