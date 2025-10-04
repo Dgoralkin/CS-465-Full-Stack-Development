@@ -1,3 +1,5 @@
+// * * * * * * * * * * Unit test file for the root AppComponent * * * * * * * * * * 
+
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
 

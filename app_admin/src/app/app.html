@@ -1,23 +1,15 @@
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * * * The content below * * * * * * * * * * * -->
-<!-- * * * * * * * * * * is only a placeholder * * * * * * * * * * -->
-<!-- * * * * * * * * * * and can be replaced.  * * * * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
-<!-- * * * * * * * * * Delete the template below * * * * * * * * * -->
-<!-- * * * * * * * to get started with your project! * * * * * * * -->
-<!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * -->
+<!-- * * * * * * * * * * Template (HTML view) for the root AppComponent * * * * * * * * * * -->
 
 
-
-
-<!-- Pull data from the app-trip-listing components (trip-listing.ts) -->
+<!-- Display page header data as h1 -->
 <nav class="navbar navbar-default">
-    <div class="container-fluid">
-      <!-- <h1>Hello, {{ title() }}</h1> -->
-      <a class="navbar-brand" href="#">{{ title }}</a>
-    </div>
+  <div class="container-fluid">
+    <!-- href="#" turn {{ title() }} into a hotlink to our admin page. -->
+    <a class="navbar-brand" href="#">{{ title }}</a>
+  </div>
 </nav>
 
+<!-- Pull data from the app-trip-listing components (trip-listing.ts) -->
 <div class="container">
   <app-trip-listing></app-trip-listing>
 </div>
