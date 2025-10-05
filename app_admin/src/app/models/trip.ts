@@ -8,12 +8,12 @@ Angular will automatically marshal the data back and forth between JSON and Java
 
 export interface Trip {
     _id: string,
-    code: String,
-    name: String,
-    length: String,
+    code: string,
+    name: string,
+    length: string,
     start: Date,
-    resort: String,
-    perPerson: String,
-    image: String,
-    description: String
+    resort: string,
+    perPerson: string,
+    image: string,
+    description: string
 }

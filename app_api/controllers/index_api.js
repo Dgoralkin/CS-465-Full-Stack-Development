@@ -27,7 +27,6 @@ const allArticlesList = async (req, res) => {
     }
 };
 
-
 // Execute allArticlesList endpoints.
 module.exports = {
     allArticlesList

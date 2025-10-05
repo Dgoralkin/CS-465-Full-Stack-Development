@@ -1,9 +1,15 @@
 <!-- <pre>{{ trips | json }}</pre> -->
 
+<!-- button to add new trips to the database via api calls -->
+<div>
+    <button (click)="addTrip()" class="btn btn-info">Add Trip</button>
+    <p></p>
+</div>
+
 <!-- Render all awailable trips from the trip list @ trip-listong.ts / from '../data/trips' -->
 <div class="row">
     <!-- Angular for-loop -->
-    <div *ngFor="let trip of trips" class="col-3">
+    <div *ngFor="let trip of trips" class="col-md-4">
 
         <!-- This section is replaced with the individual trip content from  trip-card.html file:
         <div class="card ml-4" style="width: 18rem;">

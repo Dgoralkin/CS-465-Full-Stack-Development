@@ -47,9 +47,76 @@ const findTrip = async (req, res) => {
     }
 };
 
+// ======================================== //
+//          *** Methods for POST ***        //
+//    Triggered by the travel_api router    //
+// ======================================== //
+// POST: / -> Adds a trip to DB.travel collection.
+const tripsAddTrip = async (req, res) => {
+
+    // console.log("In tripsAddTrip -> req.body: ", req.body);
+
+    try {
+        // Fetch the form data from the passed object and store it in the schema format
+    const newTrip = new DB_Travel({
+        code: req.body.code,
+        name: req.body.name,
+        length: req.body.length,
+        start: req.body.start,
+        resort: req.body.resort,
+        perPerson: req.body.perPerson,
+        image: req.body.image,
+        description: req.body.description,
+    });
+
+    // Add the form to the db
+    const q = await newTrip.save();
+    // console.log(q);
+    return res.status(201).json(q);
+
+    } catch {
+        console.error("Error adding trips:");
+        return res.status(400).json({ message: "Error adding trips to db."});
+    }
+};
+
+// ======================================== //
+//          *** Methods for PUT ***         //
+//    Triggered by the travel_api router    //
+// ======================================== //
+// PUT: /trips/:tripCode - Find a Trip from the db and updates its fields
+const tripsUpdateTrip = async (req, res) => {
+
+    // console.log("In tripsUpdateTrip -> req.params: ", req.params);
+    // console.log("In tripsUpdateTrip -> req.body: ", req.body);
+
+    try {
+        // Method updates the "req.params.tripCode" item from the DB.travel collection with req.body parameters.
+        const updateTrip = await DB_Travel.findOneAndUpdate(
+            {'code' : req.params.tripCode}, 
+            {code: req.body.code,
+            name: req.body.name,
+            length: req.body.length,
+            start: req.body.start,
+            resort: req.body.resort,
+            perPerson: req.body.perPerson,
+            image: req.body.image,
+            description: req.body.description
+            }
+        ).exec();
+
+        // console.log(updateTrip);
+        return res.status(201).json(updateTrip);
+    } catch (err){
+        console.error("Error updating trip:");
+        return res.status(400).json({ message: "Error updating trip in db.", err});
+    }
+};
 
 // Execute tripsList endpoints.
 module.exports = {
-    allTripsList,
-    findTrip
+    allTripsList,       // GET method
+    findTrip,           // GET method
+    tripsAddTrip,       // POST method
+    tripsUpdateTrip     // PUT method
 };
