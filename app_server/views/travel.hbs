@@ -17,7 +17,9 @@
                   <!-- Loop to parse passed data through controllers res, from the trips.json file -->
                   {{#each trips}}
                   <li>
-                    <a href="/api/travel/{{this.code}}"><img src="images/{{this.image}}" alt="Img"/></a>
+                    <a href="/api/travel/{{this.code}}">
+                    <img src="images/{{this.image}}" alt="Img" onerror="this.onerror=null;this.src='images/logo.png';"/>
+                    </a>
                     <h2><a href="/api/travel/{{this.code}}">{{this.name}}</a></h2>
                     <p> {{this.description}} </p>
                     <p> {{this.description_details}} </p>

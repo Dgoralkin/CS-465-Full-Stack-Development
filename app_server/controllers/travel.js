@@ -33,6 +33,7 @@ const travel = async function (req, res, next) {
             }
         }
         // Render the "travel.js" page with data from the DB/trips.
+        // console.log(json);
         res.render('travel', {title: "Travel - Travlr Getaways", currentPage: 'travel', trips: json, message});
     })
     .catch((err) => res.status(500).send(err.message));
