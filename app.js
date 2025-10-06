@@ -3,8 +3,16 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
+const passport = require('passport');
+
+// Wire in our authentication module 
+require('./app_api/config/passport');
+
 // Require MongoDB from the app_api/models folder
 require('./app_api/models/db');
+
+// Pull in the contents of our .env file to bring the variables defined in the file into our memory space
+require('dotenv').config();
 
 // Setup routes for page navigation
 const indexRouter = require('./app_server/routes/index');         // Update the path for the homepage
@@ -42,20 +50,29 @@ app.set('view engine', 'hbs');
 
 app.use(logger('dev'));
 app.use(express.json());
-// parse application/x-www-form-urlencoded
+// Parse application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+// Add an initializer for our passport module
+app.use(passport.initialize());
 
 // ENABLE CORS (Cross Origin Resource Sharing) for resource sharing to hook Angular SPA
 app.use('/api', (req, res, next) => {
   res.header('Access-Control-Allow-Origin', 'http://localhost:4200');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   if (req.method === 'OPTIONS') {
     return res.sendStatus(200);
   }
   next();
+});
+
+// Catch unauthorized error and create 401
+app.use((err, req, res, next) => {
+  if (err.name === 'UnauthorizedError') {
+    res.status(401).json({"message": err.name + ": " + err.message});
+  }
 });
 
 
