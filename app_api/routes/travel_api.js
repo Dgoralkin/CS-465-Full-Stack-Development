@@ -3,6 +3,7 @@
 
 const express = require("express");
 const router = express.Router();
+const jwt = require('jsonwebtoken');                        // Enable JSON Web Tokens
 
 // Define the path for the travel page api
 const tripsController = require("../controllers/travel_api");

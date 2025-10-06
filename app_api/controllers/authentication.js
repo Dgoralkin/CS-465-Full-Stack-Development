@@ -61,9 +61,11 @@ const login = async (req, res) => {
 // JWT authentication middleware - sits between the client’s request and the route handler.
 // Called by Express automatically before running the route logic where authentication is needed.
 const authenticateJWT = (req, res, next) => {
+    console.log('In Middleware - authenticateJWT');
     const authHeader = req.headers.authorization;
 
     if (!authHeader) {
+        console.log('Not enough tokens in Auth Header.');
         return res.status(401).json({ message: "Missing Authorization header" });
     }
 
