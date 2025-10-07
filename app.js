@@ -58,13 +58,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
 
 // ENABLE CORS (Cross Origin Resource Sharing) for resource sharing to hook Angular SPA
-app.use('/api', (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'http://localhost:4200');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+app.use((req, res, next) => {
+  const allowedOrigin = 'http://localhost:4200';
+  res.header('Access-Control-Allow-Origin', allowedOrigin);
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Credentials', 'true'); // Allow credentials if needed
+
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
+    console.log('Preflight request received for:', req.originalUrl);
+    return res.sendStatus(204);
   }
+
   next();
 });
 

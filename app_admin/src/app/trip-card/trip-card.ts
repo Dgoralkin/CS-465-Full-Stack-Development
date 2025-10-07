@@ -4,6 +4,9 @@ import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Trip } from '../models/trip';
 
+// Add the authenticator to show/hide the add trip button
+import { Authentication } from '../services/authentication';
+
 @Component({
   selector: 'app-trip-card',
   standalone: true,
@@ -15,7 +18,10 @@ import { Trip } from '../models/trip';
 export class TripCardComponent implements OnInit {
   @Input('trip') trip: any;
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private authentication: Authentication
+  ) {}
 
   ngOnInit(): void {
     
@@ -43,5 +49,10 @@ export class TripCardComponent implements OnInit {
   onImageError(event: Event) {
     const element = event.target as HTMLImageElement;
     element.src = 'assets/images/logo.png'; // fallback image path
+  }
+
+  // Add logic to checkif a user is logged in.
+  public isLoggedIn() {
+    return this.authentication.isLoggedIn();
   }
 }

@@ -1,7 +1,7 @@
 <!-- <pre>{{ trips | json }}</pre> -->
 
 <!-- button to add new trips to the database via api calls -->
-<div>
+<div *ngIf="isLoggedIn()">
     <button (click)="addTrip()" class="btn btn-info">Add Trip</button>
     <p></p>
 </div>

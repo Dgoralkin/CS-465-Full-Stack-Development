@@ -5,6 +5,7 @@ import { BROWSER_STORAGE } from '../storage';           // Provides access to ou
 import { User } from '../models/user';                  // Provides us a means of representing our user data,
 import { AuthResponse } from '../models/auth-response'; // Provides representation for our JWT
 import { TripData } from '../services/trip-data';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,8 @@ export class Authentication {
   constructor(
     @Inject(BROWSER_STORAGE)
     private storage: Storage,           // Read the JWT from the BROWSER_STORAGE
-    private tripDataService: TripData
+    private tripDataService: TripData,
+    private router: Router
   ) {}
 
   // Variable to handle Authentication Responses
@@ -91,6 +93,8 @@ export class Authentication {
           console.log(value);
           this.authResp = value;
           this.saveToken(this.authResp.token);
+          // Redirect to main page after successfull register
+          this.router.navigate(['/']);
         }
       }, error: (error: any) => { console.log('Error: ' + error); }
     })

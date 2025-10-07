@@ -12,10 +12,11 @@ import { FormsModule } from "@angular/forms";
 import { Router } from '@angular/router';
 import { Authentication } from '../services/authentication';
 import { User } from '../models/user';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })

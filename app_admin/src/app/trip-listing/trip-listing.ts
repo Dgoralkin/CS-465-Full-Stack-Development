@@ -13,6 +13,9 @@ import { TripCardComponent } from '../trip-card/trip-card';   // Read the trips 
 // Add the required import to bring in the routing capability to POST data to an api
 import { Router } from '@angular/router';
 
+// Add the authenticator to show/hide the add trip button
+import { Authentication } from '../services/authentication';
+
 @Component({
   selector: 'app-trip-listing',
   standalone: true,
@@ -30,8 +33,9 @@ export class TripListing implements OnInit{
   message: string = '';
 
   constructor(
-    private tripDataService: TripData,    // Reads data from the api
-    private router: Router                // A router to post data through the api
+    private tripDataService: TripData,      // Reads data from the api
+    private router: Router,                 // A router to post data through the api
+    private authentication: Authentication  
   ) {
     console.log('trip-listing constructor');
   }
@@ -62,5 +66,10 @@ export class TripListing implements OnInit{
   ngOnInit(): void {
       console.log('ngOnInit');
       this.getStuff();
+  }
+
+  // Add logic to checkif a user is logged in.
+  public isLoggedIn() {
+    return this.authentication.isLoggedIn();
   }
 }

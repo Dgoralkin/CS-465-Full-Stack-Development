@@ -48,6 +48,7 @@ img {
 /** Navigation **/
 #navigation {
   background: url(../images/bg-navigation.png) no-repeat;
+  position: relative;
   clear: both;
   height: 50px;
   width: 860px;
@@ -66,7 +67,7 @@ img {
   background-position: 0 -118px;
   background-repeat: no-repeat;
   height: 49px;
-  width: 122px;
+  width: 105px;
   margin: 0;
   padding-left: 1px;
   text-align: center;
@@ -91,6 +92,21 @@ img {
 #navigation li.selected a {
   background-position: 0 0;
   color: #e4e1bd;
+}
+#navigation li.admin-link {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 122px;
+}
+#navigation li.admin-link a {
+  background-color: #f1c40f;      /* gold */
+  color: #333;
+  transition: background-color 0.3s ease;
+}
+#navigation li.admin-link a:hover {
+  background-color: #d4ac0d;      /* darker gold on hover */
+  color: #fff;
 }
 /*------------------------------ CONTENTS ------------------------------*/
 #contents {
