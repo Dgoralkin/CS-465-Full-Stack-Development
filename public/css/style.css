@@ -136,9 +136,39 @@ html, body {
   transition: all 0.3s ease;
 }
 
-
 #footer li.admin-link a:hover {
   background: var(--primary-color) !important;
+}
+
+/* Go to cart button */
+.user-link-img {
+  width: 38px;
+  height: 38px;
+  vertical-align: middle;
+  cursor: pointer;
+  background: none !important;
+  box-shadow: none !important;
+  border: none !important;
+  margin-top: 3px;
+}
+
+.user-link-img:hover {
+  width: 40px;
+  height: 40px;
+  vertical-align: middle;
+  cursor: pointer;
+  background: none !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+.cart-link,
+.cart-link-li {
+  background: none !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
 }
 
 /* ===============================
@@ -269,6 +299,8 @@ textarea {
   text-decoration: underline;
 }
 
+
+
 /* Testimonials */
 #testimonials p {
   font-style: italic;
@@ -288,6 +320,36 @@ textarea {
 
 #sidebar .section img:hover {
   transform: scale(1.03);
+}
+
+/* Add to cart button */
+.trip-header {
+  position: relative;
+  margin-top: 10px;
+}
+
+.trip-header h2 {
+  display: inline-block;
+  margin: 0;
+  font-size: 1.5em;
+  line-height: 1.2;
+}
+
+.login-btn {
+  position: absolute;
+  left: 286px;
+  top: 0;
+  background-color: var(--accent-color);
+  color: var(--box-bg) !important;
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.login-btn:hover {
+  background-color: var(--secondary-color);
 }
 
 /* ===============================

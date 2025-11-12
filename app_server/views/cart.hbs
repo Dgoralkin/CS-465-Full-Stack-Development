@@ -1,5 +1,5 @@
 <!-- ====================================================================
-  File: travel.hbs
+  File: cart.hbs
   Description: Template for displaying all available travel packages.
   Author: Daniel Gorelkin
   Version: 1.2
@@ -39,14 +39,14 @@
             <div>
               <div class="body">
                 <!-- Page Title -->
-                <h1>Travel</h1>
+                <h1>Your Shopping Cart</h1>
                 <h3></h3>
 
                 <!-- Loop through each trip object and render its data.
                 Each trip includes an image, name, and description text.
                 Image fallback is applied if the specified file is missing. -->
                 <ul id="sites">
-                  {{#each trips}}
+                  {{#each cartItems}}
                   <li>
                     <a href="/api/travel/{{this.code}}">
                       <img 
@@ -55,22 +55,9 @@
                         onerror="this.onerror=null;this.src='images/logo.png';"
                       />
                     </a>
-
-                    <div class="trip-header">
-                      <h2>
-                        <a href="/api/travel/{{this.code}}">{{this.name}}</a>
-                      </h2>
-
-                      <!-- Add item to cart button -->
-                      <!-- Form submits a POST request to add the selected trip to the shopping cart. -->
-                      <!-- The hidden inputs specify the collection and item ID for server processing. -->
-                      <form action="/api/cart" method="POST">
-                        <input type="hidden" name="collection" value="trips">
-                        <input type="hidden" name="_id" value="{{this._id}}">
-                        <button type="submit" class="login-btn"> 🛒 Add to cart </button>
-                      </form>
-                    </div>
-
+                    <h2>
+                      <a href="/api/travel/{{this.code}}">{{this.name}}</a>
+                    </h2>
                     <p>{{this.description}}</p>
                     <p>{{this.description_details}}</p>
                     <h3></h3>
