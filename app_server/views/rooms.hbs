@@ -1,37 +1,76 @@
+<!-- ====================================================================
+  File: rooms.hbs
+  Description: Template for displaying all available rooms packages.
+  Author: Daniel Gorelkin
+  Version: 1.2
+  Created: 2025-08-20
+  Updated: 2025-11-10
+
+  Purpose:
+    - Part of the Travlr CMS project
+    - Responsible for rendering the list of hotel rooms
+    - Dynamically displays room data received from the controller
+      via the "rooms_data" JSON passed in the rendering context.
+===================================================================== -->
+
 <!DOCTYPE html>
-<!-- Website template by freewebsitetemplates.com -->
 <html>
+
+	<!-- Use handlebars templating to inject shared HEAD block content.
+  	Content is read from the head.hbs partial file. -->
 	{{> head }}
 	<body>
 		<div id="background">
+
 			<div id="page">
-				<!-- Set handlebars to fetch HTML from ./partials/header.hbs -->
+
+				<!-- Header block (logo, navigation, login button).
+        		Loaded from the header.hbs partial and shared across all project pages. -->
 				{{> header }}
+
 				<div id="contents">
 					<div class="box">
 						<div>
 							<div class="body">
+								<!-- Page Title -->
 								<h1>Rooms</h1>
+
+								<!-- Loop through each trip object and render its data. 
+								Each room includes an image and name.
+                				Image fallback is applied if the specified file is missing. -->
 								<ul id="rooms">
-									<!-- Loop to parse passed data through controllers res, from the rooms.json file -->
 									{{#each rooms_data}}
 									<li>
-										<a href="/api/rooms/{{this.name}}"><img src="images/{{image}}" alt="Img"></a>
-										<h2><a href="/api/rooms/{{this.name}}">{{name}}</a></h2>
+										<a href="/api/rooms/{{this.name}}">
+											<img 
+												src="images/{{this.image}}" 
+												alt="Img" 
+												onerror="this.onerror=null;this.src='images/logo.png';"
+											/>
+										</a>
+
+										<h2>
+											<a href="/api/rooms/{{this.name}}">{{name}}</a>
+										</h2>
+
 										<p>
 											{{description}}
 										</p>
-										<span class="rate">{{rate}}</span>
+										<span class="rate">Rate: ${{rate}} / Day</span>
 									</li>
 									{{/each}}
 								</ul>
+
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-			<!-- Set handlebars to fetch HTML from ./partials/footer.hbs -->
+
+			<!-- Footer block (external links, navigation, admin login).
+      		Loaded from the footer.hbs partial file. -->
 			{{> footer }}
+
 		</div>
 	</body>
 </html>

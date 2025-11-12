@@ -1,35 +1,53 @@
+/* ===================================================================================
+  File: app.js
+  Description: Main application file for Travlr CMS
+  Author: Daniel Gorelkin
+  Version: 1.1
+  Created: 2025-08-15
+  Updated: 2025-11-10
+
+  Purpose:
+    - Sets up Express server with middleware for logging, parsing, and authentication
+    - Configures view engine (Handlebars) and static file serving
+    - Defines routes for both server-rendered pages and RESTful API endpoints
+    - Implements error handling for 404 and other server errors
+    - Enables CORS for cross-origin requests from an Angular SPA
+    - Connects to MongoDB database
+    - Loads environment variables from .env file
+    - Registers Handlebars helpers and partials for dynamic content rendering
+====================================================================================== */
+
+// Import required modules
 const createError = require('http-errors');
 const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const passport = require('passport');
-
-// Wire in our authentication module 
-require('./app_api/config/passport');
 
 // Require MongoDB from the app_api/models folder
 require('./app_api/models/db');
 
-// Pull in the contents of our .env file to bring the variables defined in the file into our memory space
+// Pull in the contents of our .env file to bring the variables defined in 
+// the file into our memory space
 require('dotenv').config();
 
 // Setup routes for page navigation
 const indexRouter = require('./app_server/routes/index');         // Update the path for the homepage
 const travelRouter = require('./app_server/routes/travel');       // Update the path for the travel page
-const roomRouter = require('./app_server/routes/rooms');           // Update the path for the room page
+const roomRouter = require('./app_server/routes/rooms');          // Update the path for the room page
 const mealsRouter = require('./app_server/routes/meals');         // Update the path for the meals page
 const newsRouter = require('./app_server/routes/news');           // Update the path for the news page
 const aboutRouter = require('./app_server/routes/about');         // Update the path for the about page
 const contactRouter  = require('./app_server/routes/contact');    // Update the path for the contact us page
 
 // Setup rest api routes for page navigation
-const indexApiRouter = require('./app_api/routes/index_api');     // Path to the index api
-const travelApiRouter = require('./app_api/routes/travel_api');   // Path to the travel api
-const roomsApiRouter = require('./app_api/routes/rooms_api');     // Path to the rooms api
-const mealsApiRouter = require('./app_api/routes/meals_api');     // Path to the meals api
-const newsApiRouter = require('./app_api/routes/news_api');       // Path to the news api
-const contactUsApiRouter = require('./app_api/routes/contact_api');       // Path to the news api
+const indexApiRouter = require('./app_api/routes/index_api');         // Path to the index api
+const travelApiRouter = require('./app_api/routes/travel_api');       // Path to the travel api
+const roomsApiRouter = require('./app_api/routes/rooms_api');         // Path to the rooms api
+const mealsApiRouter = require('./app_api/routes/meals_api');         // Path to the meals api
+const newsApiRouter = require('./app_api/routes/news_api');           // Path to the news api
+const contactUsApiRouter = require('./app_api/routes/contact_api');   // Path to the contact api
+const authRoutes = require("./app_api/routes/authentication");        // Path to the authentication api
 
 // Enable handlebars to render in multipal pages
 const handelbars = require('hbs');
@@ -48,16 +66,16 @@ app.set('views', path.join(__dirname, 'app_server', 'views'));    // Update the 
 handelbars.registerPartials(path.join(__dirname, 'app_server', 'views', 'partials'));
 app.set('view engine', 'hbs');
 
+// Setup middleware
 app.use(logger('dev'));
 app.use(express.json());
+
 // Parse application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
-// Add an initializer for our passport module
-app.use(passport.initialize());
 
-// ENABLE CORS (Cross Origin Resource Sharing) for resource sharing to hook Angular SPA
+// Enable CORS (Cross Origin Resource Sharing) for resource sharing to hook Angular SPA
 app.use((req, res, next) => {
   const allowedOrigin = 'http://localhost:4200';
   res.header('Access-Control-Allow-Origin', allowedOrigin);
@@ -66,7 +84,7 @@ app.use((req, res, next) => {
     'Origin, X-Requested-With, Content-Type, Accept, Authorization'
   );
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Credentials', 'true'); // Allow credentials if needed
+  res.header('Access-Control-Allow-Credentials', 'true');
 
   if (req.method === 'OPTIONS') {
     console.log('Preflight request received for:', req.originalUrl);
@@ -100,19 +118,20 @@ app.use('/api', roomsApiRouter);            // Trigger the api for the rooms pag
 app.use('/api', mealsApiRouter);            // Trigger the api for the meals page from app_api/routes/meals_api
 app.use('/api', newsApiRouter);             // Trigger the api for the news page from app_api/routes/news_api
 app.use('/api', contactUsApiRouter);        // Trigger the api for the contact us page from app_api/routes/news_api
+app.use("/api", authRoutes);                // Trigger the api for authentication from app_api/routes/authentication
 
-// catch 404 and forward to error handler
+// Catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
 });
 
-// error handler
+// Error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-  // render the error page
+  // Render the error page
   res.status(err.status || 500);
   res.render('error');
 });

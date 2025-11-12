@@ -1,46 +1,69 @@
-// Schema for holding user credentials in the database.
+/* ========================================================================================
+  File: userSchema.js
+  Description: Mongoose model for user authentication with password hashing and JWT support.
+  Author: Daniel Gorelkin
+  Version: 1.1
+  Created: 2025-08-15
+  Updated: 2025-11-12
 
+  Purpose:
+  - This file defines the Mongoose schema for the user collection in MongoDB.
+  - It specifies the structure and data types for each field in the collection.
+  - The schema includes methods for setting passwords, validating passwords, and generating JSON Web Tokens (JWTs).
+  - The schema is then compiled into a Mongoose model for use in the application.
+  - Security measures such as password hashing and token expiration are implemented.
+  - The email field is indexed for uniqueness to prevent duplicate user accounts.
+=========================================================================================== */
+
+// Import the Mongoose module
 const mongoose = require("mongoose");
+
+// Import crypto and jwt modules for password hashing and token generation
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
-
+// Structure of the user collection in MongoDB
+// Define the user collection schema.
 const userSchema = new mongoose.Schema({
-    email: { type: String, unique: true, required: true },
+    email: { type: String, unique: true, required: true },      // Use email as unique identifier
     name: { type: String, required: true },
     hash: String,
     salt: String
 });
 
-
-// Method to set the password on this record. 
+// Method to set the password for this record.
+// Generates a salt and hash for the given password
 userSchema.methods.setPassword = function(password){
-    // Generates number of cryptographically random bytes.
+
+    // Create a unique salt for a particular user
     this.salt = crypto.randomBytes(16).toString('hex');
-    // Get ab unique key
-    this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, 'sha512')
-    .toString('hex');
+
+    // Hashing user's salt and password with 1000 iterations, 64 length and sha512 digest
+    this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, 'sha512').toString('hex');
 };
 
-
-// Method to compare entered password against stored hash
+// Method to validate the password on this record. Check if a given password matches the stored one.
+// Compares the given password after hashing with the stored hash
+// Returns true if the password is valid, false otherwise
 userSchema.methods.validPassword = function(password) {
     var hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, 'sha512').toString('hex');
-    console.log("In user.validPassword: checking passwords...");
-    console.log("Password is: ", this.hash === hash);
+    // console.log("Password is: ", this.hash === hash);
+
+    // Check if the computed hash matches the stored hash and return the result
     return this.hash === hash;
 };
 
-
 // Method to generate a JSON Web Token for the current record
+// Returns the generated JWT
+// The token includes the user's _id, email, and name, and expires in 1 hour
 userSchema.methods.generateJWT = function() {
-    return jwt.sign(            // Payload for our JSON Web Token
+    return jwt.sign(                                                        // Payload for our JSON Web Token
         {_id: this._id, email: this.email, name: this.name},
-        process.env.JWT_SECRET, //SECRET stored in .env file
-        { expiresIn: '1h' }     //Token expires an hour from creation
+        process.env.JWT_SECRET,                                             // SECRET stored in .env file
+        { expiresIn: '1h' }                                                 // Token expires an hour from creation
     );
 };
 
-
+// Compile the Schema into a Mongoose model and export it
 const User = mongoose.model('users', userSchema);
 module.exports = User;

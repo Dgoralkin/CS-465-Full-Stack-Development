@@ -1,9 +1,21 @@
-// This file defines the Schema for the about us page and the about collection in the database.
+/* ========================================================================================
+  File: aboutSchema.js
+  Description: Path definition for the about collection schema.
+  Author: Daniel Gorelkin
+  Version: 1.1
+  Created: 2025-08-15
+  Updated: 2025-11-12
 
-// Require Mongoose
+  Purpose:
+    - This file defines the Mongoose schema for the about collection in MongoDB.
+    - It specifies the structure and data types for each field in the collection.
+    - The schema is then compiled into a Mongoose model for use in the application.
+=========================================================================================== */
+
+// Import the Mongoose module
 const mongoose = require('mongoose');
 
-// Define the travel collection schema
+// Structure of the travel collection in MongoDB
 const aboutSchema = new mongoose.Schema({
     content: {
         paragraph_1: { type: String, required: true },
@@ -15,7 +27,6 @@ const aboutSchema = new mongoose.Schema({
     amenities: { type: String, required: true }
 });
 
-// Compile the Schema
-// Structure=ConnectionName.model('nameOfModel', 'schemaToUse', 'collectionName')
+// Compile the Schema into a Mongoose model and export it
 const About = mongoose.model('About', aboutSchema, 'about');
 module.exports = About;

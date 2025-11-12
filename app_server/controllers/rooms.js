@@ -1,11 +1,19 @@
-// This is the controller module to add navigation functionality for the rooms page and manage the application logic.
-// res.render is the Express function for compiling a view template to send as the HTML response that the browser will receive
+/* ========================================================================================
+  File: rooms.js
+  Description: Controller module for the Rooms page.
+  Author: Daniel Gorelkin
+  Version: 1.1
+  Created: 2025-08-15
+  Updated: 2025-11-10
 
-// Option 1: Read the rooms from the database @travlr.room collection and store data as array.
-// Fetch data from the database through an API endpoint.
+  Purpose:
+    - This is the controller module to add navigation functionality for the rooms 
+      page which manage the application logic
+    - Read the articles from the database @travlr.room collection and store data as array.
+    - Fetch data from the database through an API endpoint with a fallback option.
+=========================================================================================== */
 
-// Create a variable for our API endpoint
-// Use env var to switch between local and deployed on Render modes
+// Build an API URL from envirable variable (fallback to localhost) and the /api path.
 const apiHost = process.env.API_HOST || "http://localhost:3000";
 const roomsEndpoint = `${apiHost}/api/rooms`;
 
@@ -14,12 +22,12 @@ const options = {
   headers: { Accept: "application/json" }
 };
 
-/* GET rooms view */
+// Controller function to handle requests to the rooms page
 const rooms = async (req, res, next) => {
-  console.log("ROOMS CONTROLLER BEGIN");
+  // console.log("ROOMS CONTROLLER BEGIN");
 
   try {
-    // Fetch results from the database (backend API URL)
+    // Make a GET request to the API endpoint to fetch articles
     const response = await fetch(roomsEndpoint, options);
 
     // Throw an error if the response has a bad status (404 or 500)
@@ -27,11 +35,12 @@ const rooms = async (req, res, next) => {
       throw new Error(`API error: ${response.statusText}`);
     }
 
-    // Converts the API response into a JS object/array.
+    // Parse the JSON response to get the articles array
     let allRooms = await response.json();
     // console.log(allRooms);
-    let message = null;
 
+    // Handle cases where no articles are found or unexpected data is returned
+    let message = null;
     if (!Array.isArray(allRooms)) {
       console.error("API returned unexpected data");
       message = "API lookup error";
@@ -40,7 +49,7 @@ const rooms = async (req, res, next) => {
       message = "No trips were found in our database.";
     }
 
-    // Response 200 OK, Render the "rooms.js" page with data from the DB.meal.
+    // Render the rooms view with the fetched articles and any message (Response 200 OK)
     res.render("rooms", {
       title: "Rooms - Travlr Getaways",
       currentPage: "rooms",
@@ -48,25 +57,10 @@ const rooms = async (req, res, next) => {
       message
     });
   } catch (err) {
+    // Handle any errors that occur during the fetch operation
     console.error(err);
     res.status(500).send(err.message);
   }
 };
 
 module.exports = { rooms };
-
-
-// Option 2: Read the data from the rooms.json file @app_server.data and store data as trips.
-/*
-const fs = require('fs');
-const rooms_data = JSON.parse(fs.readFileSync('./data/rooms.json', 'utf8'));
-
-// GET rooms view
-const rooms = (req, res) => {
-    res.render('rooms', {title: "Rooms - Travlr Getaways", currentPage: 'rooms', rooms_data});
-};
-
-module.exports = {
-    rooms
-}
-*/

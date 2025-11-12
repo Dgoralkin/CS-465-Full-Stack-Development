@@ -1,14 +1,27 @@
-// This file integrates with MongoDB to retrieve data for our application.
+/* ========================================================================================
+  File: meals_api.js
+  Description: Controller for meals-related API endpoints.
+  Author: Daniel Gorelkin
+  Version: 1.1
+  Created: 2025-08-15
+  Updated: 2025-11-12
 
-// Pull Model details from tripsSchema
+  Purpose:
+    - This file contains controller methods for handling API requests related to the meals collection.
+    - It includes methods for retrieving, meals from the meals collection.
+    - Each method interacts with the Mongoose model to perform database operations.
+    - Proper error handling and response formatting are implemented.
+=========================================================================================== */
+
+// Import the Mongoose model for index collection
 const DB_meal = require('../models/mealsSchema');
 
 // ======================================== //
 //          *** Methods for GET ***         //
-//    Triggered by the meals_api router     //
 // ======================================== //
 
 // GET: /meals -> Endpoint lists all meals from DB.meal collection.
+// Returns JSON array of all meals.
 const allMealsList = async (req, res) => {
     try {
         // Query the DB with get all
@@ -28,10 +41,11 @@ const allMealsList = async (req, res) => {
 };
 
 // GET: /meals:mealName -> Endpoint lists a single meal from DB.meal collection.
+// Returns JSON object of a single meal.
 const findMeal = async (req, res) => {
     try {
-        // Query the DB with find one document by code pased through "/meals/:mealName"
-        // GET request for: http://localhost:3000/api/meals/SeaFood Special
+        // Query the DB with get one
+        // 'mealName' is passed as a route parameter
         const query = await DB_meal.find({'meal' : req.params.mealName}).exec();
 
         // If no results found, still return 200 but with a response message
@@ -39,7 +53,7 @@ const findMeal = async (req, res) => {
             return res.status(200).json({ message: "No results found" });
         }
         // Otherwise, return 200 OK and a json result
-        return res.status(200).json(query);
+        return res.status(200).json(query[0]);
 
     } catch (err) {
         console.error("Error retrieving trips:", err);

@@ -1,43 +1,69 @@
-// This file use used to establish the connection to the MongoDB database through Mongoose
-// And require it in app.js
+/* ========================================================================================
+  File: db.js
+  Description: Database connection script for MongoDB using Mongoose.
+  Author: Daniel Gorelkin
+  Version: 1.1
+  Created: 2025-08-15
+  Updated: 2025-11-11
 
+  Purpose:
+    - This code establishes a connection to the MongoDB database using Mongoose.
+    - It handles connection events and errors.
+    - It ensures graceful disconnection on app termination.
+    - It imports and exposes the database schemas from the models directory.
+=========================================================================================== */
+
+// Import the Mongoose module
 const mongoose = require('mongoose');
 
-// Define the localhost (for a local DB)
-const localhost = '127.0.0.1';
+// Define the MongoDB connection string
+// Use Atlas DB connection string which defined in environment variables.
+const dbURI = process.env.ATLAS_DB_HOST;
 
-// Connect to the Atlas DB by default via env vars.
-// Secondary connection option is via the local host if cannot connect to Atlas remotely.
-const dbURI = process.env.ATLAS_DB_HOST || `mongodb://${localhost}/travlr`;
+// Connection options for Mongoose
+const mongooseOptions = {
+  maxPoolSize: 10,
+  serverSelectionTimeoutMS: 5000,
+  connectTimeoutMS: 10000,
+};
 
-// Async function to connect with try/catch
-async function connectDB() {
-  try {
-    // Connect to the database
-    await mongoose.connect(dbURI);
+// Function to connect to the database with retries and exponential backoff
+// Implements retry logic with exponential backoff in case of connection failures
+async function connectDB(maxRetries = 5, initialBackoffMs = 500) {
+  let attempt = 0;
+  let delay = initialBackoffMs;
 
-    // Log if Atlas or local connected
-    if (process.env.ATLAS_DB_HOST) {
-      // strip credentials before logging
-      const safeURI = dbURI.replace(/\/\/.*@/, '//***:***@');
-      console.log(`Mongoose connected to AtlasDB @ ${safeURI}`);
-    } else {
-      console.log(`Mongoose connected to Local DB @ ${dbURI}`);
+  // Retry loop for connecting to the database
+  while (attempt < maxRetries) {
+    try {
+      // Connect to the MongoDB Atlas database using Mongoose
+      await mongoose.connect(dbURI, mongooseOptions);
+      console.log("Connected to Atlas DB!");
+      return;
+    } catch (err) {
+      // Log the error and retry after a delay
+      console.error(`Attempt ${attempt + 1} failed:`, err.message);
+      attempt++;
+      if (attempt < maxRetries) {
+        console.log(`Retrying in ${delay} ms...`);
+        await new Promise(res => setTimeout(res, delay));
+        delay *= 2; // exponential backoff
+      } else {
+        throw new Error("Could not connect to DB after maximum retries");
+      }
     }
-  } catch (err) {
-    console.error('Mongoose connection error:', err);
   }
 }
 
-// Call the connection function
+// Initiate the database connection
 connectDB();
 
 // Registers a listener (callback function) that runs whenever the event occurs.
-// Display db connection status via events
 mongoose.connection.on('error', err => {
   console.log('Mongoose connection error:', err);
 });
 
+// Log disconnection event
 mongoose.connection.on('disconnected', () => {
   console.log('Mongoose disconnected');
 }); 
@@ -52,8 +78,7 @@ process.on('SIGINT', async () => {
 // Outout the connection state:
 console.log('Connection state:', mongoose.connection.readyState);
 
-// Expose the database schema from the models dir
-// Import Mongoose schema from the travlr dir
+// Import the Schemas to register them with Mongoose
 require('./tripsSchema');
 require('./indexSchema');
 require('./roomsSchema');

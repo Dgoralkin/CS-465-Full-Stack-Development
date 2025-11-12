@@ -1,16 +1,31 @@
-// This file integrates with MongoDB to retrieve data for our application.
+/* ========================================================================================
+  File: contact_api.js
+  Description: Controller for travel-related API endpoints.
+  Author: Daniel Gorelkin
+  Version: 1.1
+  Created: 2025-08-15
+  Updated: 2025-11-12
 
-// Pull Model details from tripsSchema
+  Purpose:
+    - This file contains controller methods for handling API requests related to the contact collection.
+    - Each method interacts with the Mongoose model to perform database operations.
+    - Proper error handling and response formatting are implemented.
+    - The GET method retrieves the company contact us details from the contact collection.
+    - The POST method handles form submissions for contact us forms and saves them to the leads collection.
+=========================================================================================== */
+
+// Import the Mongoose model for contact collection
 const DB_Contact = require('../models/contactSchema');
-// Pull Model details from leadsSchema to store the submitted form documents.
-const DB_Leads = require('../models/leadsSchema');
+
+// Import the Mongoose model for lids collection
+const DB_lids = require('../models/lidsSchema');
 
 // ======================================== //
 //          *** Methods for GET ***         //
-//    Triggered by the contact_api router   //
 // ======================================== //
 
-// GET: /contact -> Endpoint lists all rooms from DB.room collection.
+// GET: /contact -> Endpoint lists the company contact us details from DB.contact collection.
+// Returns JSON array of all contact us details.
 const getContactUsForm = async (req, res) => {
     try {
         // Query the DB with get all
@@ -31,24 +46,23 @@ const getContactUsForm = async (req, res) => {
 
 // ======================================== //
 //          *** Methods for POST ***         //
-//    Triggered by the contact_api router   //
 // ======================================== //
 
-// POST: @ /api/contact -> Save a new contact form entry
+// POST: @ /api/contact -> Save the submitted contact us form entry to DB.lids collection.
 // Read values through x-www-form-urlencoded body → req.body
 const submitContactForm = async (req, res) => {
   try {
     // Fetch values from the submitted form.
     const { name, email, subject, message } = req.body;
 
-        // Validate all fields were filled.
+        // Validate that all fields are filled.
         if (!name || !email || !subject || !message) {
             // Return JSON response to the api/contact page if any of the fields is missing.
             return res.status(200).json({ message: `Fields: name, email, subject, or message cannot be empty!` });
         }
 
     // Add document to the DB.leads collection.
-    const newContact = new DB_Leads({
+    const newLid = new DB_lids({
       name,
       email,
       subject,
@@ -57,9 +71,9 @@ const submitContactForm = async (req, res) => {
     });
     
     // Save the lead data to the database.
-    await newContact.save();
+    await newLid.save();
 
-    console.log("FORM INPUT:", name, email, subject, message);
+    // console.log("FORM INPUT:", name, email, subject, message);
 
     // Return JSON response to the api/contact page.
     return res.status(201).json({ message: `Thank you ${name}, your form submitted successfully` });

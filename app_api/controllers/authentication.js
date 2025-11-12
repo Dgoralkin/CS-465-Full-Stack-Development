@@ -1,57 +1,79 @@
-// This is the controller for authenticating and registering users.
+/* ========================================================================================
+  File: contact_api.js
+  Description: Controller for user authentication and registration.
+  Author: Daniel Gorelkin
+  Version: 1.1
+  Created: 2025-08-15
+  Updated: 2025-11-12
 
+  Purpose:
+    - This is the controller for authenticating and registering users.
+    - It includes methods for user registration, login, and JWT authentication middleware.
+=========================================================================================== */
+
+// Import required modules
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");     // Methods to set JWT, register and validate user password
-const passport = require('passport');       // 
+const passport = require('passport');       // Passport for authentication strategies
+
+// ======================================== //
+//       *** Authentication Methods ***     //
+// ======================================== //
 
 // Register new user controller
+// Validates user input, creates user, hashes password, and returns JWT.
 const register = async (req, res) => {
-    // Validate all user fields exist
+
+    // Validate all user fields exist else return error message
     if (!req.body.name || !req.body.email || !req.body.password) {
-        // Any field is missing error response
         return res.status(400).json({ message: "All fields required" });
     }
 
     try {
-        // Instanciate new user schema model for db storage
+        // Create new user object from User model
         const user = new User({
-            name: req.body.name,        // Fetch username
-            email: req.body.email,      // Fetch password
+            name: req.body.name,        // Fetch username from request body
+            email: req.body.email,      // Fetch password from request body
         });
 
-        // Set salt as "91d2a67...71d8d94706" and hash "e562....60d" to user
+        // Salt and hash the password using setPassword method from user model
         user.setPassword(req.body.password);
-        // Add user to database -> travlr.users
-        await user.save();
-        console.log("User: ", req.body.name, " added to database.");
 
-        // Generate unique token for the user.
+        // Save the user to the database
+        await user.save();
+        // console.log("User: ", req.body.name, " added to database.");
+
+        // Generate and return unique token for the user.
         const token = user.generateJWT();
-        return res.status(200).json({ token });                 // Return JSON WEB Token(JWT)
+        return res.status(200).json({ token });
+
     } catch (err) {
-        return res.status(500).json({ error: err.message });    // Return error details
+        return res.status(500).json({ error: err.message });
     }
 };
 
-// Login handler controller
+
+// Login existing user controller
+// Validates user credentials and returns JWT if successful.
 const login = async (req, res) => {
-    // Check that all fields are in place.
+    // Check that all fields are in place, else return error message
     if (!req.body.email || !req.body.password) {
         return res.status(400).json({ message: "All fields required" });    // Return error
     }
 
     try {
-        // Query the database for the user by email.
+        // Query the database for the user by email to validate credentials
         const user = await User.findOne({ email: req.body.email });
 
         // Check credentials and validate password (returns True if Hash metches)
         if (!user || !user.validPassword(req.body.password)) {
-            return res.status(401).json({ message: "Invalid credentials" });    // No Hash metch
+            // No Hash metched - invalid credentials
+            return res.status(401).json({ message: "Invalid credentials" });
         }
 
-        // Generate a JSON Web Token for the user for 1H
+        // Generate a JSON Web Token for the user for 1H if valid credentials and return it
         const token = user.generateJWT();
-        console.log("Username: ", req.body.email, "authenticated :-)");
+        // console.log("Username: ", req.body.email, "authenticated :-)");
         return res.status(200).json({ token });
     } catch (err) {
         return res.status(500).json({ error: err.message });
@@ -61,9 +83,12 @@ const login = async (req, res) => {
 // JWT authentication middleware - sits between the client’s request and the route handler.
 // Called by Express automatically before running the route logic where authentication is needed.
 const authenticateJWT = (req, res, next) => {
-    console.log('In Middleware - authenticateJWT');
+    // console.log('In Middleware - authenticateJWT');
+
+    // Get the token from the Authorization header
     const authHeader = req.headers.authorization;
 
+    // Check if the header is present, return 401 if missing
     if (!authHeader) {
         console.log('Not enough tokens in Auth Header.');
         return res.status(401).json({ message: "Missing Authorization header" });
@@ -78,9 +103,15 @@ const authenticateJWT = (req, res, next) => {
             return res.status(403).json({ message: "Invalid or expired token" });
         }
 
-        req.user = decoded; // store user info in request
+        // Token is valid, store decoded user info in request object for use in next middleware/route
+        req.user = decoded;
         next();
     });
 };
 
-module.exports = { register, login, authenticateJWT };
+// Export the controller methods
+module.exports = {
+    register,
+    login,
+    authenticateJWT
+};

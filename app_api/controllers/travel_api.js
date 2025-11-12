@@ -1,14 +1,27 @@
-// This file integrates with MongoDB to retrieve data for our application.
+/* ========================================================================================
+  File: trvael_api.js
+  Description: Controller for travel-related API endpoints.
+  Author: Daniel Gorelkin
+  Version: 1.1
+  Created: 2025-08-15
+  Updated: 2025-11-12
 
-// Pull Model details from tripsSchema
+  Purpose:
+    - This file contains controller methods for handling API requests related to the travel collection.
+    - It includes methods for retrieving, adding, and updating trips in the travel collection.
+    - Each method interacts with the Mongoose model to perform database operations.
+    - Proper error handling and response formatting are implemented.
+=========================================================================================== */
+
+// Import the Mongoose model for index collection
 const DB_Travel = require('../models/tripsSchema');
 
 // ======================================== //
 //          *** Methods for GET ***         //
-//    Triggered by the travel_api router    //
 // ======================================== //
 
-// GET: /trip -> Endpoint lists all trips from DB.trips collection.
+// GET: / -> Endpoint lists all trips from DB.travel collection.
+// Returns JSON array of all trips.
 const allTripsList = async (req, res) => {
     try {
         // Query the DB with get all
@@ -28,10 +41,12 @@ const allTripsList = async (req, res) => {
 };
 
 // GET: /trip:tripCode -> Endpoint lists a single trip from DB.trips collection.
+// Returns JSON object of a single trip.
 const findTrip = async (req, res) => {
     try {
-        // Query the DB with find one document by code pased through "/travel/:tripCode"
-        // GET request for: http://localhost:3000/api/travel/DAWR210315
+        // Query the DB with get one
+        // 'tripCode' is passed as a route parameter
+        // E.g., /travel/ABC123 where 'ABC123' is the tripCode.
         const query = await DB_Travel.findOne({'code' : req.params.tripCode}).exec();
 
         // If no results found, still return 200 but with a response message
@@ -49,29 +64,29 @@ const findTrip = async (req, res) => {
 
 // ======================================== //
 //          *** Methods for POST ***        //
-//    Triggered by the travel_api router    //
 // ======================================== //
+
 // POST: / -> Adds a trip to DB.travel collection.
+// Expects JSON object in request body.
 const tripsAddTrip = async (req, res) => {
-
-    // console.log("In tripsAddTrip -> req.body: ", req.body);
-
     try {
-        // Fetch the form data from the passed object and store it in the schema format
-    const newTrip = new DB_Travel({
-        code: req.body.code,
-        name: req.body.name,
-        length: req.body.length,
-        start: req.body.start,
-        resort: req.body.resort,
-        perPerson: req.body.perPerson,
-        image: req.body.image,
-        description: req.body.description,
+
+        // Create a new trip object using the data from req.body
+        const newTrip = new DB_Travel({
+            code: req.body.code,
+            name: req.body.name,
+            length: req.body.length,
+            start: req.body.start,
+            resort: req.body.resort,
+            perPerson: req.body.perPerson,
+            image: req.body.image,
+            description: req.body.description,
     });
 
-    // Add the form to the db
+    // Save the new trip to the DB
     const q = await newTrip.save();
-    // console.log(q);
+
+    // Return the newly created trip
     return res.status(201).json(q);
 
     } catch {
@@ -82,16 +97,15 @@ const tripsAddTrip = async (req, res) => {
 
 // ======================================== //
 //          *** Methods for PUT ***         //
-//    Triggered by the travel_api router    //
 // ======================================== //
+
 // PUT: /trips/:tripCode - Find a Trip from the db and updates its fields
+// E.g., /travel/ABC123 where 'ABC123' is the tripCode.
+// Expects JSON object in request body.
 const tripsUpdateTrip = async (req, res) => {
 
-    // console.log("In tripsUpdateTrip -> req.params: ", req.params);
-    // console.log("In tripsUpdateTrip -> req.body: ", req.body);
-
     try {
-        // Method updates the "req.params.tripCode" item from the DB.travel collection with req.body parameters.
+        // Find the trip by tripCode and update its fields with the data from req.body
         const updateTrip = await DB_Travel.findOneAndUpdate(
             {'code' : req.params.tripCode}, 
             {code: req.body.code,
@@ -105,15 +119,16 @@ const tripsUpdateTrip = async (req, res) => {
             }
         ).exec();
 
-        // console.log(updateTrip);
+        // Return the updated trip
         return res.status(201).json(updateTrip);
+
     } catch (err){
         console.error("Error updating trip:");
         return res.status(400).json({ message: "Error updating trip in db.", err});
     }
 };
 
-// Execute tripsList endpoints.
+// Export the controller methods
 module.exports = {
     allTripsList,       // GET method
     findTrip,           // GET method

@@ -1,38 +1,81 @@
+<!-- ====================================================================
+  File: travel.hbs
+  Description: Template for displaying all available travel packages.
+  Author: Daniel Gorelkin
+  Version: 1.2
+  Created: 2025-08-20
+  Updated: 2025-11-10
+
+  Purpose:
+    - Part of the Travlr CMS project
+    - Responsible for rendering the list of travel destinations
+    - Dynamically displays trip data received from the controller
+      via the "trips" JSON passed in the rendering context.
+===================================================================== -->
+
 <!DOCTYPE html>
-<!-- Website template by freewebsitetemplates.com -->
 <html>
-  <!-- Set handlebars to fetch HTML from ./partials/head.hbs -->
+
+  <!-- Use handlebars templating to inject shared HEAD block content.
+  Content is read from the head.hbs partial file. -->
   {{> head }}
+
   <body>
     <div id="background">
+
       <div id="page">
-        <!-- Set handlebars to fetch HTML from ./partials/header.hbs -->
+
+        <!-- Header block (logo, navigation, login button).
+        Loaded from the header.hbs partial and shared across all project pages. -->
         {{> header }}
+
+        <!-- The main contents block.
+        Displays all travel packages using the "trips" array passed from the controller.
+        Expected structure:
+          trips: [{ code: String, name: String, image: String,
+                  description: String, description_details: String }] -->
         <div id="contents">
           <div class="box">
             <div>
               <div class="body">
+                <!-- Page Title -->
                 <h1>Travel</h1>
+
+                <!-- Loop through each trip object and render its data.
+                Each trip includes an image, name, and description text.
+                Image fallback is applied if the specified file is missing. -->
                 <ul id="sites">
-                  <!-- Loop to parse passed data through controllers res, from the trips.json file -->
                   {{#each trips}}
                   <li>
                     <a href="/api/travel/{{this.code}}">
-                    <img src="images/{{this.image}}" alt="Img" onerror="this.onerror=null;this.src='images/logo.png';"/>
+                      <img 
+                        src="images/{{this.image}}" 
+                        alt="Img" 
+                        onerror="this.onerror=null;this.src='images/logo.png';"
+                      />
                     </a>
-                    <h2><a href="/api/travel/{{this.code}}">{{this.name}}</a></h2>
-                    <p> {{this.description}} </p>
-                    <p> {{this.description_details}} </p>
+
+                    <h2>
+                      <a href="/api/travel/{{this.code}}">{{this.name}}</a>
+                    </h2>
+
+                    <p>{{this.description}}</p>
+                    <p>{{this.description_details}}</p>
                   </li>
                   {{/each}}
                 </ul>
+
               </div>
             </div>
           </div>
         </div>
+
       </div>
-      <!-- Set handlebars to fetch HTML from ./partials/header.hbs -->
+
+      <!-- Footer block (external links, navigation, admin login).
+      Loaded from the footer.hbs partial file. -->
       {{> footer }}
+
     </div>
   </body>
 </html>

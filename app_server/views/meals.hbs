@@ -1,17 +1,48 @@
+<!-- ====================================================================
+  File: meals.hbs
+  Description: Template for displaying all available meal packages.
+  Author: Daniel Gorelkin
+  Version: 1.2
+  Created: 2025-08-20
+  Updated: 2025-11-10
+
+  Purpose:
+    - Part of the Travlr CMS project
+    - Responsible for rendering the list of available meals
+    - Dynamically displays meals data received from the controller
+      via the "trips" JSON object passed in the rendering context.
+===================================================================== -->
+
 <!DOCTYPE html>
-<!-- Website template by freewebsitetemplates.com -->
 <html>
+
+	<!-- Use handlebars templating to inject shared HEAD block content.
+  	Content is read from the head.hbs partial file. -->
 	{{> head }}
+
 	<body>
 		<div id="background">
+
 			<div id="page">
-				<!-- Set handlebars to fetch HTML from ./partials/header.hbs -->
+
+				<!-- Header block (logo, navigation, login button).
+        		Loaded from the header.hbs partial and shared across all project pages. -->
 				{{> header }}
+
+				<!-- The main contents block.
+        		Displays all travel packages using the "trips" array passed from the controller.
+        		Expected structure:
+          		meals: [{ _id: String, meal: String, image: String, description: String }] -->
 				<div id="contents">
 					<div class="box">
 						<div>
 							<div class="body">
+								<!-- Page Title -->
 								<h1>Meals</h1>
+
+								<!-- Loop through each trip object and render its data.
+                				Each trip includes an image, name, and description text.
+                				Image fallback is applied if the specified file is missing. -->
 								<ul id="foods">
 									<!-- Loop to parse passed data through controllers res, from the meals.json file -->
 									{{#each meals_data}}
@@ -30,9 +61,13 @@
 						</div>
 					</div>
 				</div>
+
 			</div>
-			<!-- Set handlebars to fetch HTML from ./partials/footer.hbs -->
+			
+			<!-- Footer block (external links, navigation, admin login).
+      		Loaded from the footer.hbs partial file. -->
 			{{> footer }}
+
 		</div>
 	</body>
 </html>

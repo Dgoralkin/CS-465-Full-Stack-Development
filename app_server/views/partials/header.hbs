@@ -1,12 +1,26 @@
-<!-- This is the handelbars page that holds the handlebar for the html headers pages -- >
-<!-- header -->
+<!-- ====================================================================
+  File: header.hbs
+  Description: Defines the header for all web application's pages.
+                includes company logo, top navigation and user login button.
+  Author: Daniel Gorelkin
+  Version: 1.1
+  Created: 2025-08-15
+  Updated: 2025-11-10
+===================================================================== -->
+
+<!-- Upper navigation bar for the website pages and user login-->
 <div id="header">
+
+    <!-- Company logo that links back to the homepage -->
     <div id="logo">
-    <a href="/"><img src="images/TravlrGetawaysLogo.png" alt="LOGO" height="100" width="200"/></a>
+        <a href="/">
+            <img src="images/TravlrGetawaysLogo.png" alt="LOGO" height="100" width="200"/>
+        </a>
     </div>
+
+    <!-- Upate the class with the "selected" style to highlight the existing page -->
     <div id="navigation">
         <ul>
-            <!-- Upate the class with the "selected" style -->
             <li class="{{#if (eq currentPage '/')}}selected{{/if}}">
                 <a href="/">Home</a>
             </li>
@@ -28,8 +42,10 @@
             <li class="{{#if (eq currentPage 'contact')}}selected{{/if}}">
                 <a href="/contact">Contact</a>
             </li>
-            <li class="admin-link">
-                <a href="http://localhost:4200/login" target="_blank">Admin Login</a>
+
+            <!-- User login button link, opens in a new tab -->
+            <li class="user-link">
+                <a href="http://localhost:4200/login" target="_blank">Login</a>
             </li>
         </ul>
     </div>
