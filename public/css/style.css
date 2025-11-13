@@ -112,7 +112,7 @@ html, body {
   background-color: #f4a261;
 }
 
-/* User Login Link in header */
+/* User Login button in header */
 #navigation li.user-link a {
   background: var(--primary-color);
   color: white;
@@ -126,7 +126,7 @@ html, body {
   background: var(--secondary-color);
 }
 
-/* User Login Link in Footer */
+/* Admin Login button in Footer */
 #footer li.admin-link a {
   background: var(--secondary-color);
   color: white;
@@ -140,7 +140,7 @@ html, body {
   background: var(--primary-color) !important;
 }
 
-/* Go to cart button */
+/* Add item to cart button */
 .user-link-img {
   width: 38px;
   height: 38px;

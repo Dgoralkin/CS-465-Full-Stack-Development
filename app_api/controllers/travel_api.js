@@ -20,8 +20,8 @@ const DB_Travel = require('../models/tripsSchema');
 //          *** Methods for GET ***         //
 // ======================================== //
 
-// GET: / -> Endpoint lists all trips from DB.travel collection.
-// Returns JSON array of all trips.
+// GET: /travel -> Endpoint lists all trips from DB.travel collection.
+// Returns JSON array of all trips in the 'travel' collection.
 const allTripsList = async (req, res) => {
     try {
         // Query the DB with get all

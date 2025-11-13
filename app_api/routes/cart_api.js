@@ -1,10 +1,10 @@
 /* ========================================================================================
   File: cart_api.js
-  Description: Route module for the Travel page API.
+  Description: Route module for the Cart page API.
   Author: Daniel Gorelkin
-  Version: 1.1
-  Created: 2025-08-15
-  Updated: 2025-11-11
+  Version: 1.0
+  Created: 2025-11-13
+  Updated: NA
 
   Purpose:
     - This file routes the process to the travel_api.js controller in app_api directory.
@@ -20,22 +20,21 @@
 const express = require("express");
 const router = express.Router();
 
-// Import the travel controller module
+// Import the cart controller module
 const cartController = require("../controllers/cart_api");
 
-// Defines the endpoint `/travel` and pass the content to the 'tripsController.allTripsList' function.
-// Also defines POST method to add a new trip, protected by JWT authentication.
-// Express calls authenticateJWT before running the route logic.
+// Defines the endpoint `/cart` and pass the content to the 'cartController.allCartItemsList' function.
+// Also defines POST method to add selected item objects to the DB.cart collection through the message body.
 router.route("/cart")
-.get(cartController.allCartItemsList)                          // GET  -> Fetch all trips from DB.travel collection.
+.get(cartController.allCartItemsList)           // GET  -> Fetch all items from DB.cart collection.
+.post(cartController.addItemToCart);              // POST -> Add item to the user's cart and DB.cart collection.
 
-// Defines the endpoint `/travel/:tripCode` and pass the content to the 'tripsController.findTrip' function.
-// Also defines PUT method to update a trip, protected by JWT authentication.
-// Express calls authenticateJWT before running the route logic.
-// The :tripCode is a route parameter used to identify the specific trip.
-// E.g., /travel/ABC123 where 'ABC123' is the tripCode.
-router.route("/cart/:_id")
-.get(cartController.updateCartItem)                              // GET  -> fetch one specific trip from DB.travel collection.
+// Defines the endpoint `/cart/:dbCollection/:itemId` and pass the content to the 'cartController.findOneCartItem' function.
+// The :dbCollection is a database collection name parameter used to search the specific collection from the DB.
+// The :itemId is unique object _id parameter used to search the specific item from a collection.
+// E.g., /cart/colname/itemID123 where 'colname' is the collection name, and 'itemID123' is the item _id.
+router.route("/cart/:dbCollection/:itemId")
+.get(cartController.findOneCartItem)            // GET  -> Fetch one specific item from any DB collection.
 
 // Export the router object to be used in other parts of the application
 module.exports = router;

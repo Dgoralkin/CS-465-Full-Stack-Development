@@ -1,16 +1,16 @@
 /* ========================================================================================
   File: cart.js
-  Description: Controller module for the Shopping Cart page.
+  Description: Controller module for rendering the Shopping Cart page.
   Author: Daniel Gorelkin
-  Version: 1.1
-  Created: 2025-08-15
-  Updated: 2025-11-13
+  Version: 1.0
+  Created: 2025-11-13
+  Updated: NA
 
   Purpose:
-    - This is the controller module to add navigation functionality for the travel 
+    - This is the controller module to add navigation functionality for the cart 
       page which manage the application logic
     - Fetch data from the database @travlr.cart collection through an API endpoint with a fallback option.
-    - Render the cart view with the fetched data or show an enpty cart page if no data is found.
+    - Render the cart view with the fetched data or show an empty cart page if no data is found.
 =========================================================================================== */
 
 // Build an API URL from envirable variable (fallback to localhost) and the /api path.
@@ -22,38 +22,45 @@ const options = {
     headers: {Accept: "application/json"}
 }
 
-// Controller function to handle requests to the travel page
+// Controller function to handle requests to the cart page
 const showCart = async function (req, res, next) {
-    // console.log('showCart CONTROLLER BEGIN');
 
-    // Make a GET request to the API endpoint to fetch trips
+    // Make a GET request to the API endpoint to fetch items
     await fetch(CartEndpoint, options)
     .then((res) => res.json())
     .then(json => {
+
+        // Uncomment for debugging
+        // console.log("API response received:", json);
+
+        // Define an empty message response variable
         let message = null;
-        console.log("API response received:", json);
 
-        // Handle cases where no trips are found or unexpected data is returned
-        if (!(json.length)) {
+        // Validate that the response is an array
+        // Handle cases where response is OK but no trips are found
+        // Return an empty JSON if no trips were found in the database.
+        if (!Array.isArray(json)) {
+            json = {}
             message = "No trips were found in the database.";
-            console.log(message);
+            // console.log(message);
         }
-        console.log(json);
 
-        // Render the cart page view with the fetched items in the cart and any message (Response 200 OK)
+        // Render the cart page view with the fetched items in the cart and a message (Response 200 OK)
+        // Return an empty JSON if cart is empty.
         res.render(
             'cart', {
                 title: "Shopping Cart - Travlr Getaways", 
                 currentPage: 'cart', 
                 cartItems: json, 
                 message
-            });
+        });
     })
 
     // Catch and handle any errors that occur during the fetch operation
     .catch((err) => res.status(500).send(err.message));
 };
 
+// Export the module
 module.exports = {
     showCart
 }

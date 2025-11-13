@@ -1,16 +1,16 @@
 <!-- ====================================================================
   File: cart.hbs
-  Description: Template for displaying all available travel packages.
+  Description: Template for displaying all existing travel items from the cart
   Author: Daniel Gorelkin
-  Version: 1.2
-  Created: 2025-08-20
-  Updated: 2025-11-10
+  Version: 1.0
+  Created: 2025-11-13
+  Updated: NA
 
   Purpose:
     - Part of the Travlr CMS project
-    - Responsible for rendering the list of travel destinations
-    - Dynamically displays trip data received from the controller
-      via the "trips" JSON passed in the rendering context.
+    - Responsible for rendering the list of all the existing items from the cart.
+    - Dynamically displays cart data received from the controller
+      via a JSON array passed in the rendering context.
 ===================================================================== -->
 
 <!DOCTYPE html>
@@ -32,8 +32,8 @@
         <!-- The main contents block.
         Displays all travel packages using the "trips" array passed from the controller.
         Expected structure:
-          trips: [{ code: String, name: String, image: String,
-                  description: String, description_details: String }] -->
+        trips: [{ _id: string code: String, name: String, start: Date , resort: String, 
+        perPerson: Number , image: String, description: String, description_details: String }] -->
         <div id="contents">
           <div class="box">
             <div>
@@ -42,27 +42,33 @@
                 <h1>Your Shopping Cart</h1>
                 <h3></h3>
 
-                <!-- Loop through each trip object and render its data.
-                Each trip includes an image, name, and description text.
+                <!-- Loop through each cart object and render its data.
+                Each cart object includes an image, name, and description text.
                 Image fallback is applied if the specified file is missing. -->
                 <ul id="sites">
-                  {{#each cartItems}}
-                  <li>
-                    <a href="/api/travel/{{this.code}}">
-                      <img 
-                        src="images/{{this.image}}" 
-                        alt="Img" 
-                        onerror="this.onerror=null;this.src='images/logo.png';"
-                      />
-                    </a>
-                    <h2>
-                      <a href="/api/travel/{{this.code}}">{{this.name}}</a>
-                    </h2>
-                    <p>{{this.description}}</p>
-                    <p>{{this.description_details}}</p>
-                    <h3></h3>
-                  </li>
-                  {{/each}}
+                  {{#if cartItems.length}}
+                    <ul>
+                      {{#each cartItems}}
+                        <li>
+                          <a href="/api/{{this.dbCollection}}/{{this.code}}">
+                            <img 
+                              src="images/{{this.image}}" 
+                              alt="Img" 
+                              onerror="this.onerror=null;this.src='images/logo.png';"
+                            />
+                          </a>
+                          <h2>
+                            <a href="/api/travel/{{this.code}}">{{this.name}}</a>
+                          </h2>
+                          <p>{{this.description}}</p>
+                          <p>{{this.description_details}}</p>
+                          <h3></h3>
+                        </li>
+                      {{/each}}
+                    </ul>
+                  {{else}}
+                    <p>Your cart is empty. <a href="/travel">Start shopping now!</a>!</p>
+                  {{/if}}
                 </ul>
 
               </div>
