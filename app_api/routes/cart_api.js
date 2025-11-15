@@ -27,7 +27,9 @@ const cartController = require("../controllers/cart_api");
 // Also defines POST method to add selected item objects to the DB.cart collection through the message body.
 router.route("/cart")
 .get(cartController.allCartItemsList)           // GET  -> Fetch all items from DB.cart collection.
-.post(cartController.addItemToCart);              // POST -> Add item to the user's cart and DB.cart collection.
+.post(cartController.addItemToCart)             // POST -> Add item to the user's cart in DB.cart collection.
+.put(cartController.updateItemQuantity)         // PUT  -> Find and updates a record in DB.cart collection.
+.delete(cartController.removeItemFromCart)      // DELETE> Remove item from the DB.cart collection.
 
 // Defines the endpoint `/cart/:dbCollection/:itemId` and pass the content to the 'cartController.findOneCartItem' function.
 // The :dbCollection is a database collection name parameter used to search the specific collection from the DB.

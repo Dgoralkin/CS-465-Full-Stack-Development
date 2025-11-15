@@ -93,6 +93,10 @@ const findOneCartItem = async (req, res) => {
 //          *** Methods for POST ***        //
 // ======================================== //
 
+// Function queries the database to add a single object from the cart collection
+// Validates and returns a response message if item already exist in the cart.
+// Returns JSON object of a single item found from the cart collection in the database.
+// E.g., /cart where the parameters are passed through a x-www-form-urlencoded message.
 const addItemToCart = async (req, res) => {
 
     try {
@@ -100,7 +104,15 @@ const addItemToCart = async (req, res) => {
         const {collection, itemId, itemCode, itemName, itemRate, itemImage} = req.body;
         // console.log(collection, itemId, itemCode, itemName, itemRate, itemImage);
 
-        // Create a new trip object using the data from req.body
+        // Check if the item already exists in the cart
+        const existingItem = await DB_Cart.findOne({ _id: itemId }).exec();
+
+        // If found, return an informative 200 OK response and a message
+        if (existingItem) {
+            return res.status(200).json({ message: `Item "${itemName}" is already in your cart.` });
+        }
+
+        // If item does not exist in the cart, create a new item object using the data passed from req.body
         const newCartItem = new DB_Cart({
             _id: itemId,
             code: itemCode,
@@ -110,7 +122,7 @@ const addItemToCart = async (req, res) => {
             image: itemImage
     });
 
-    // Save the new trip to the cart collection in the DB
+    // Save the new item to the cart collection in the DB
     const q = await newCartItem.save();
 
     // Return the newly added trip name
@@ -122,10 +134,76 @@ const addItemToCart = async (req, res) => {
     }
 };
 
+// ======================================== //
+//          *** Methods for PUT ***        //
+// ======================================== //
+
+// Function queries the database to update a single object from the cart collection
+// Returns the updated JSON object of a single item from the cart collection in the database.
+// E.g., /cart where the _id parameter and the new quantity value are passed through a x-www-form-urlencoded message.
+const updateItemQuantity = async (req, res) => {
+
+    try {
+        // Find the item by item _id and update its quantity field according to the request in req.body
+        // Returns a JSON of the freshly updated record
+        const updatedItem = await DB_Cart.findOneAndUpdate(
+            { _id : req.body._id }, 
+            { quantity: req.body.quantity },
+            { new: true, runValidators: true }  // Run validator to insure minimum quantity limit.
+        ).exec();
+
+        // Validate that the cart item has been updated with the requested value.
+        if (updatedItem !== null) {
+            // Return OK and the updated item JSON object
+            return res.status(201).json(updatedItem);
+        } else {
+            // Return 404 and the JSON
+            return res.status(404).json(updatedItem);
+        }
+
+    // General error handler.
+    } catch {
+        console.error("Error updating item in cart.");
+        return res.status(400).json({ message: "Error updating item in cart."});
+    }
+};
+
+// ======================================== //
+//          *** Methods for DELETE ***      //
+// ======================================== //
+
+// Function queries the database to delete a single object from the cart collection
+// Returns a JSON confirmation message of removing object from the cart collection in the database.
+// E.g., /cart where the _id parameter value is passed through a x-www-form-urlencoded message.
+const removeItemFromCart = async (req, res) => {
+    try {
+        // Find the item by item _id and delete it from the database according to the request in req.body
+        // Returns a JSON of the successfully deleted record
+        const removeItem = await DB_Cart.findByIdAndDelete({ _id : req.body._id }).exec();
+        // console.log("removeItem:", removeItem);
+
+        // Validate that the cart item has been removed.
+        if (!removeItem) {
+
+            // Return 404 and the JSON
+            return res.status(404).json({ error: "Item not found" });
+        } 
+
+        // Return OK and the updated item JSON object
+            return res.status(201).json({ message: "Item removed", removeItem });
+
+    // General error handler.
+    } catch {
+        console.error("Error deleting item from cart.");
+        return res.status(400).json({ message: "Error deleting item from cart."});
+    }
+};
 
 // Export the controller methods
 module.exports = {
     allCartItemsList,           // GET method
     findOneCartItem,            // GET method
-    addItemToCart               // POST method
+    addItemToCart,              // POST method
+    updateItemQuantity,          // PUT method
+    removeItemFromCart          // DELETE method
 };

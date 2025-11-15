@@ -17,18 +17,18 @@
 const apiHost = process.env.API_HOST || "http://localhost:3000";
 const contactEndpoint = `${apiHost}/api/contact`;
 
-const option1 = {
+const option = {
   method: "GET",
   headers: { Accept: "application/json" }
 };
 
 // Controller function to handle requests to the contact page
 const getContactUs = async (req, res, next) => {
-  console.log("CONTACT US CONTROLLER BEGIN");
+  // console.log("CONTACT US CONTROLLER BEGIN");
 
   try {
     // Make a GET request to the API endpoint to fetch contact details
-    const response = await fetch(contactEndpoint, option1);
+    const response = await fetch(contactEndpoint, option);
 
     // Throw an error if the response has a bad status (404 or 500)
     if (!response.ok) {

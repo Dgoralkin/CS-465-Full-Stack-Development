@@ -105,10 +105,10 @@ const tripsAddTrip = async (req, res) => {
 const tripsUpdateTrip = async (req, res) => {
 
     try {
-        // Find the trip by tripCode and update its fields with the data from req.body
+        // Find the trip by tripCode and update its fields with the data from the passed body.
         const updateTrip = await DB_Travel.findOneAndUpdate(
-            {'code' : req.params.tripCode}, 
-            {code: req.body.code,
+            {'code' : req.params.tripCode},     // Read parameters from URI.
+            {code: req.body.code,               // Read parameters from Body.
             name: req.body.name,
             length: req.body.length,
             start: req.body.start,

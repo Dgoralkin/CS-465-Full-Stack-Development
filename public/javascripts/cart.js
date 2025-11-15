@@ -1,10 +1,13 @@
 /* ====================================================================
-  File: cart.js
+  File: cartPricing.js
   Description: Client-side JavaScript for managing the travel cart.
   Author: Daniel Gorelkin
   Version: 1.0
   Created: 2025-11-13
   Updated: NA
+
+FIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIX
+
 
   Purpose:
     - This file contains JavaScript code that runs in the browser to handle 
@@ -15,62 +18,68 @@
         processing and handling errors gracefully.
 ===================================================================== */
 
-// Attach event listeners to all forms with the class 'add-to-cart-form'
-document.querySelectorAll('.add-to-cart-form').forEach(form => {
+// Get all the buttons by class from the Cart page.
+const quantityButtons = document.querySelectorAll('.btn-quantity');
+// console.log("quantityButtons:", quantityButtons);
 
-    // Event listener listening to the 'submit' button
-    form.addEventListener('submit', async e => {
+// Get all the attributes for each button.
+quantityButtons.forEach(button => {
 
-        // Prevent the default form submission behavior to handle it via JavaScript and stay on tghe page
-        e.preventDefault();
+  // Add asynchronous event listener for each clicked button.
+  button.addEventListener('click', async (e) => {
+    // console.log("e.target:", e.target);
 
-        // Extract the item ID, code, name, and the DB.collection from the form's data attributes
-        const itemId = form.querySelector('input[name="_id"]').value;
-        const itemCode = form.querySelector('input[name="itemCode"]').value;
-        const itemName = form.querySelector('input[name="itemName"]').value;
-        const itemRate = form.querySelector('input[name="itemRate"]').value;
-        const itemImage = form.querySelector('input[name="itemImage"]').value;
-        const collection = form.querySelector('input[name="collection"]').value;
-        
-        // console.log('Adding to cart... ',itemCode, itemName, collection, itemId);
+    // Get the id of the clicked button from its data-id.
+    const btn = e.currentTarget;
+    const itemID = btn.dataset.id;
+    // console.log("btn, itemID:", btn, itemID);
 
-        // Select the button within the form to provide feedback
-         const button = form.querySelector('button[type="submit"]');
+    // Extract the text from the class which button was clicked.
+    // Returns the item's quantity current value as a string and convert it to int.
+    const clickedItem = document.querySelector(`.item-quantity[data-id="${itemID}"]`);
+    let itemQuantity = parseInt(clickedItem.textContent);
 
-        // Disable the button and change its text to indicate processing to prevent multiple submissions
-        button.disabled = true;
-        button.textContent = 'Adding...';
+    // Update the item's quantity value by one upon each clicked button.
+    try {
+      if (btn.matches('.btn-quantity.decrease')) {            // Decrease button clicked
+        itemQuantity -= 1;
+      } else if (btn.matches('.btn-quantity.increase')) {     // Increase button clicked
+        itemQuantity += 1;
+      }
 
-        try {
-            // Send a POST request to the server to add the trip to the cart
-            const response = await fetch('/api/cart', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+      // Push the update to database through the defined API PUT request and a body message.
+      const updateResponse = await fetch('/api/cart', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ _id: itemID, quantity: itemQuantity })
+      });
 
-            // Include the collection and trip ID in the request body
-            body: JSON.stringify({ 
-                collection: collection, 
-                itemId: itemId, 
-                itemCode: itemCode, 
-                itemName: itemName,
-                itemRate: itemRate,
-                itemImage: itemImage,
-             })
-            });
+      // Also update item's quantity value in the HTML page if the database has been updated successfully.
+      if (updateResponse.ok) {
+        clickedItem.textContent = itemQuantity;
+      }
 
-            // Read response from the controller and display a confirmation message
-            const result = await response.json();
-            window.alert(result.message || 'Added to cart!');
-
-        } catch (err) {
-            // Display error message.
-            console.error('Error adding to cart:', err);
-            window.alert('Can\'t add this item to your cart.');
-
-        } finally {
-            /// Enable the button back and change its text to default
-            button.disabled = false;
-            button.textContent = '🛒 Add to cart';
-        }
+      // Remove item from the cart upon clicked delete button.
+      if (btn.matches('.btn-quantity.remove')) { 
+        // Submit the delete command to database through the defined API DELETE request and a body message.
+        const deleteResponse = await fetch('/api/cart', {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ _id: itemID })
         });
+
+        // console.log("deleteResponse:", deleteResponse);
+
+        // Also update item's quantity value in the HTML page if the database has been updated successfully.
+        if (deleteResponse.ok) {
+          // refresh the current page, so any updated data will be re-fetched from the server.
+          location.reload();
+        }
+      }
+
+    } catch (err) {
+      console.log(`Error updating item ${itemID} in Cart:`, err);
+    }
+
+  });
 });

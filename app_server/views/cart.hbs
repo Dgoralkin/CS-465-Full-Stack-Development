@@ -11,6 +11,7 @@
     - Responsible for rendering the list of all the existing items from the cart.
     - Dynamically displays cart data received from the controller
       via a JSON array passed in the rendering context.
+    - Functionality increases/decreases and removes items from the cart and the database.
 ===================================================================== -->
 
 <!DOCTYPE html>
@@ -57,12 +58,45 @@
                               onerror="this.onerror=null;this.src='images/logo.png';"
                             />
                           </a>
-                          <h2>
-                            <a href="/api/travel/{{this.code}}">{{this.name}}</a>
-                          </h2>
+
+                          <div class="trip-header">
+                            <h2>
+                              <a href="/api/travel/{{this.code}}">{{this.name}}</a>
+                            </h2>
+
+                            <!-- See public/javascripts/cart.js for handling logic and functionality -->
+                            <h3 class="cart-item-controls">
+                              <div>
+                                <p>
+                                  ${{this.rate}} x 
+                                  <span class="item-quantity" data-id="{{this._id}}">{{this.quantity}}</span>
+
+                                    <!--  Increase/decrease/remove quantity and remove functionality buttons -->
+                                    <!--  Buttons trigger the EventListener in public/javascripts/cart.js -->
+                                    <button 
+                                      type="button" 
+                                      class="btn-quantity decrease" 
+                                      data-id="{{this._id}}" 
+                                      aria-label="Decrease quantity"><i class="bi bi-dash-circle"></i></button>
+
+                                    <button 
+                                      type="button" 
+                                      class="btn-quantity increase" 
+                                      data-id="{{this._id}}" 
+                                      aria-label="Increase quantity"><i class="bi bi-plus-circle"></i></button>
+
+                                    <button 
+                                      type="button" 
+                                      class="btn-quantity remove" 
+                                      data-id="{{this._id}}" 
+                                      aria-label="Remove item"><i class="bi bi-trash"></i></button>
+                                </p>
+                              </div>
+                            </h3>
+
+                          </div>
                           <p>{{this.description}}</p>
                           <p>{{this.description_details}}</p>
-                          <h3></h3>
                         </li>
                       {{/each}}
                     </ul>
@@ -83,5 +117,10 @@
       {{> footer }}
 
     </div>
+
+    <!-- JavaScript to handle cart calculation logic -->
+    <!-- Script located in public/javascripts/cart.js -->
+    <script src="/javascripts/cart.js"></script>
+
   </body>
 </html>

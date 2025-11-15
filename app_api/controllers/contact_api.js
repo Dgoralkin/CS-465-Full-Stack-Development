@@ -55,13 +55,18 @@ const submitContactForm = async (req, res) => {
     // Fetch values from the submitted form.
     const { name, email, subject, message } = req.body;
 
-        // Validate that all fields are filled.
-        if (!name || !email || !subject || !message) {
-            // Return JSON response to the api/contact page if any of the fields is missing.
-            return res.status(200).json({ message: `Fields: name, email, subject, or message cannot be empty!` });
-        }
+    // Uncomment for debugging
+    // console.log("FORM INPUT:", name, email, subject, message);
 
-    // Add document to the DB.leads collection.
+    // Validate that all fields are filled.
+    if (!name || !email || !subject || !message) {
+      // Redirect to the Contact page and attach the response message in the URI as query param -
+      // to display the error alert and default code: 302.
+      // Note: See public/javascripts/contact.js for handling the alert window on the Contact page.
+      return res.redirect(`/contact?msg=${encodeURIComponent(`Fields: name, email, subject, or message cannot be empty!`)}`);
+    }
+
+    // Add document to the DB.lids collection.
     const newLid = new DB_lids({
       name,
       email,
@@ -70,16 +75,13 @@ const submitContactForm = async (req, res) => {
       createdAt: new Date()
     });
     
-    // Save the lead data to the database.
+    // Save the lid data to the database.
     await newLid.save();
 
-    // console.log("FORM INPUT:", name, email, subject, message);
-
-    // Return JSON response to the api/contact page.
-    return res.status(201).json({ message: `Thank you ${name}, your form submitted successfully` });
-
-    // Optional: Redirect to reload the contact page.
-    // return res.redirect("/contact");
+    // Redirect to the Contact page and attach the response message in the URI as query param.
+    // to display the confirmation alert with message in the body and default code: 302.
+    // Note: See public/javascripts/contact.js for handling the alert window on the Contact page.
+    return res.redirect(`/contact?msg=${encodeURIComponent(`Thank you ${name}, your form submitted successfully`)}`);
 
   } catch (err) {
     console.error("Error saving contact form:", err);

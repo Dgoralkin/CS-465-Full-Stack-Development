@@ -140,7 +140,7 @@ html, body {
   background: var(--primary-color) !important;
 }
 
-/* Add item to cart button */
+/* Go to cart button */
 .user-link-img {
   width: 38px;
   height: 38px;
@@ -170,6 +170,47 @@ html, body {
   border: none !important;
   padding: 0 !important;
 }
+
+/* Decrease item in cart button */
+.btn-quantity.decrease {
+    background: #ffe100;
+    color: white;
+    font-size: 1.2rem;
+    border: 5px;
+    border-radius: 5px;
+    margin-left: 20px;
+}
+
+.btn-quantity.decrease:hover {
+    background-color: #ffe941;
+}
+
+/* Increase item in cart button */
+.btn-quantity.increase {
+    background: #0ea300;
+    color: white;
+    font-size: 1.2rem;
+    border: 5px;
+    border-radius: 5px;
+}
+
+.btn-quantity.increase:hover {
+    background-color: #0b8100;
+}
+
+/* Remove item from cart button */
+.btn-quantity.remove {
+    background: #ff4d4f;
+    color: white;
+    font-size: 1.2rem;
+    border: 5px;
+    border-radius: 5px;
+}
+
+.btn-quantity.remove:hover {
+    background-color: #ff1f1f;
+}
+
 
 /* ===============================
    Contact Form
@@ -299,8 +340,6 @@ textarea {
   text-decoration: underline;
 }
 
-
-
 /* Testimonials */
 #testimonials p {
   font-style: italic;
@@ -322,7 +361,7 @@ textarea {
   transform: scale(1.03);
 }
 
-/* Add to cart button */
+/* Add item to cart button */
 .trip-header {
   position: relative;
   margin-top: 10px;
@@ -335,9 +374,9 @@ textarea {
   line-height: 1.2;
 }
 
-.login-btn {
+.add-to-cart-btn {
   position: absolute;
-  left: 286px;
+  left: 290px;
   top: 0;
   background-color: var(--accent-color);
   color: var(--box-bg) !important;
@@ -348,7 +387,7 @@ textarea {
   transition: background-color 0.3s ease;
 }
 
-.login-btn:hover {
+.add-to-cart-btn:hover {
   background-color: var(--secondary-color);
 }
 
