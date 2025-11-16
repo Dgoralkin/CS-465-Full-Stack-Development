@@ -51,11 +51,11 @@ const contactUsApiRouter = require('./app_api/routes/contact_api');   // Path to
 const cartApiRouter = require('./app_api/routes/cart_api');           // Path to the contact api
 const authRoutes = require("./app_api/routes/authentication");        // Path to the authentication api
 
-// Enable handlebars to render in multipal pages
-const handelbars = require('hbs');
+// Enable handlebars to render in multiple pages
+const handlebars = require('hbs');
 
-// Enable helper for handelbars
-handelbars.registerHelper('eq', function(a, b) {
+// Enable helper for handlebars
+handlebars.registerHelper('eq', function(a, b) {
   return a === b;
 });
 
@@ -65,7 +65,7 @@ const app = express();
 app.set('views', path.join(__dirname, 'app_server', 'views'));    // Update the path for the new app_server dir
 
 // register the call to enable partials handlebars:
-handelbars.registerPartials(path.join(__dirname, 'app_server', 'views', 'partials'));
+handlebars.registerPartials(path.join(__dirname, 'app_server', 'views', 'partials'));
 app.set('view engine', 'hbs');
 
 // Setup middleware

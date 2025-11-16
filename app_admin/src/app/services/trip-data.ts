@@ -61,6 +61,7 @@ export class TripData {
 
   // GET method helper - Used to get all the trips from the db for the Travel page
   getTrips() : Observable<Trip[]> {
+    console.log("IN this.tripsUrl: ", this.tripsUrl);
     return this.http.get<Trip[]>(this.tripsUrl);
   }
 
