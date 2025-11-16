@@ -22,6 +22,6 @@ export const routes: Routes = [
 export const appConfig = {
   providers: [
     provideRouter(routes),
-    importProvidersFrom(HttpClientModule) // <-- important for your the service
+    importProvidersFrom(HttpClientModule)
   ]
 };

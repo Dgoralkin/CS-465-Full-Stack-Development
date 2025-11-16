@@ -25,5 +25,5 @@ const lidsSchema = new mongoose.Schema({
 });
 
 // Compile the Schema into a Mongoose model and export it
-const Lids = mongoose.model('Lids', lidsSchema);
+const Lids = mongoose.model('Lids', lidsSchema, 'lids');
 module.exports = Lids;
