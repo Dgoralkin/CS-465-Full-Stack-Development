@@ -23,13 +23,8 @@ import { BROWSER_STORAGE } from '../storage';             // Gives access to our
 
 export class TripData {
 
-  // Define dynamic URLs for production usage
-
-  // baseUrl = 'http://localhost:3000/api';
-  private baseUrl = `${environment.apiUrl}`;
-  // tripsUrl = 'http://localhost:3000/api/travel';
-  // private tripsUrl = `${this.baseUrl}/travel`;
-  private tripsUrl = `https://cs-465-full-stack-development.onrender.com/api/travel`;
+  // Define API URLs to fetch trip data from
+  private tripsUrl = `https://travlr-dg.onrender.com/api/travel`;
   
   // Constructor
   constructor( 
