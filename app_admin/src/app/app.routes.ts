@@ -1,19 +1,27 @@
-// This is Angular’s routing service file to enable routing across our entire application.
+import { Routes, provideRouter } from '@angular/router';
+import { importProvidersFrom } from '@angular/core';
+import { HttpClientModule } from '@angular/common/http';
 
-import { Routes } from '@angular/router';
-
-// Import the required controllers from thier component files
-import { AddTrip } from './add-trip/add-trip';                  // AddTrip controller
-import { TripListing } from './trip-listing/trip-listing';      // TripListing controller
-import { EditTrip } from './edit-trip/edit-trip';               // EditTrip controller
-import { Login } from './login/login';                          // Login controller
+// Components
+import { AddTrip } from './add-trip/add-trip';
+import { TripListing } from './trip-listing/trip-listing';
+import { EditTrip } from './edit-trip/edit-trip';
+import { Login } from './login/login';
 import { Register } from './register/register';
 
-// Activate each of the components separately.
+// Routes
 export const routes: Routes = [
-    { path : 'add-trip', component: AddTrip },                  // Enable path to add AddTrip
-    { path : 'edit-trip', component: EditTrip },                // Enable path to AddTrip
-    { path : '', component: TripListing, pathMatch: 'full' },   // path to admin's main page
-    { path : 'login', component: Login },                       // path to Login page
-    { path : 'register', component: Register }                  // path to register page
+  { path: 'add-trip', component: AddTrip },
+  { path: 'edit-trip', component: EditTrip },
+  { path: '', component: TripListing, pathMatch: 'full' },
+  { path: 'login', component: Login },
+  { path: 'register', component: Register }
 ];
+
+// App configuration for bootstrapApplication
+export const appConfig = {
+  providers: [
+    provideRouter(routes),
+    importProvidersFrom(HttpClientModule) // <-- important for your the service
+  ]
+};
