@@ -10,7 +10,7 @@ import { HttpClient } from '@angular/common/http';
 // Switch between development and production environment
 // ng serve   OR  ng build --configuration=production
 import { environment } from '../../environments/environment';
-// console.log('API Base URL:', environment.apiUrl);
+console.log('API Base URL:', environment.apiUrl);
 
 // Used for login and register in our new services.authentication Service.
 import { User } from '../models/user';                    // To handle the two user parameters email and name
@@ -23,8 +23,14 @@ import { BROWSER_STORAGE } from '../storage';             // Gives access to our
 
 export class TripData {
 
-  // Define API URLs to fetch trip data from
-  private tripsUrl = `https://travlr-dg.onrender.com/api/travel`;
+  // Define dynamic URLs for production usage
+
+  // baseUrl = 'http://localhost:3000/api';
+  private baseUrl = `https://travlr-dg.onrender.com/api`;
+  
+  // tripsUrl = 'https://cs-465-full-stack-development.onrender.com/api/travel';
+  private tripsUrl = `${this.baseUrl}/travel`;
+
   
   // Constructor
   constructor( 
