@@ -59,7 +59,7 @@ app.use(passport.initialize());
 
 // ENABLE CORS (Cross Origin Resource Sharing) for resource sharing to hook Angular SPA
 app.use((req, res, next) => {
-  const allowedOrigin = 'http://localhost:4200';
+  const allowedOrigin = 'https://admin-travlr.onrender.com';
   res.header('Access-Control-Allow-Origin', allowedOrigin);
   res.header(
     'Access-Control-Allow-Headers',
