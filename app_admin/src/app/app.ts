@@ -13,7 +13,7 @@ import { Navbar } from './navbar/navbar';
   standalone: true,
   imports: [CommonModule, RouterOutlet, Navbar],
   templateUrl: './app.html',
-  styleUrls: ['./app.css'] // <- fix here
+  styleUrls: ['./app.css']
 })
 
 export class App {

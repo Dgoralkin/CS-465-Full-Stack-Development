@@ -10,7 +10,7 @@ import { HttpClient } from '@angular/common/http';
 // Switch between development and production environment
 // ng serve   OR  ng build --configuration=production
 import { environment } from '../../environments/environment';
-console.log('API Base URL:', environment.apiUrl);
+// console.log('API Base URL:', environment.apiUrl);
 
 // Used for login and register in our new services.authentication Service.
 import { User } from '../models/user';                    // To handle the two user parameters email and name
