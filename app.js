@@ -79,7 +79,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Enable CORS (Cross Origin Resource Sharing) for resource sharing to hook Angular SPA
 app.use((req, res, next) => {
-  const allowedOrigin = 'https://admin-travlr-dg.onrender.com';
+  const allowedOrigin = 'https://admin-travlr-dg.onrender.com/';
   res.header('Access-Control-Allow-Origin', allowedOrigin);
   res.header(
     'Access-Control-Allow-Headers',
