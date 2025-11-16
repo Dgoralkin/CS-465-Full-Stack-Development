@@ -28,7 +28,8 @@ export class TripData {
   // baseUrl = 'http://localhost:3000/api';
   private baseUrl = `${environment.apiUrl}`;
   // tripsUrl = 'http://localhost:3000/api/travel';
-  private tripsUrl = `${this.baseUrl}/travel`;
+  // private tripsUrl = `${this.baseUrl}/travel`;
+  private tripsUrl = `https://cs-465-full-stack-development.onrender.com/api/travel`;
   
   // Constructor
   constructor( 
