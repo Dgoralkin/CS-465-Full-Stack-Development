@@ -11,10 +11,9 @@ import { Navbar } from './navbar/navbar';
 @Component({
   selector: 'app-root',
   standalone: true,
-  // imports: [CommonModule, TripListing, RouterOutlet],
   imports: [CommonModule, RouterOutlet, Navbar],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css'] // <- fix here
 })
 
 export class App {
