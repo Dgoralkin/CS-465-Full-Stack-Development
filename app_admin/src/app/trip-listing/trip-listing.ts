@@ -21,8 +21,7 @@ import { Authentication } from '../services/authentication';
   standalone: true,
   imports: [CommonModule, TripCardComponent],
   templateUrl: './trip-listing.html',
-  styleUrl: './trip-listing.css',
-  providers: [TripData]
+  styleUrl: './trip-listing.css'
 })
 
 export class TripListing implements OnInit{

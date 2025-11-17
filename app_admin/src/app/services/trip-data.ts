@@ -7,11 +7,6 @@ import { Observable } from 'rxjs';
 import { Trip } from '../models/trip';
 import { HttpClient } from '@angular/common/http';
 
-// Switch between development and production environment
-// ng serve   OR  ng build --configuration=production
-// import { environment } from '../../environments/environment';
-// console.log('API Base URL:', environment.apiUrl);
-
 // Used for login and register in our new services.authentication Service.
 import { User } from '../models/user';                    // To handle the two user parameters email and name
 import { AuthResponse } from '../models/auth-response';   // The Observable that we return from login and register
@@ -34,7 +29,7 @@ export class TripData {
   constructor( 
     private http: HttpClient, 
     @Inject(BROWSER_STORAGE) private storage: Storage
-  ) {}
+  ) {console.log("TripData in runtime is using:", this.tripsUrl);}
 
   // Call to our /login endpoint, returns JWT
   login(user: User, passwd: string) : Observable<AuthResponse> {
@@ -61,12 +56,13 @@ export class TripData {
 
   // GET method helper - Used to get all the trips from the db for the Travel page
   getTrips() : Observable<Trip[]> {
-    console.log("IN this.tripsUrl: ", this.tripsUrl);
+    console.log('Inside TripData::getTrips');
     return this.http.get<Trip[]>(this.tripsUrl);
   }
 
   // POST method helper
   addTrip(formData: Trip) : Observable<Trip> {
+    console.log('Inside TripData::addTrip');
     return this.http.post<Trip>(this.tripsUrl, formData);
   }
 
