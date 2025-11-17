@@ -20,9 +20,10 @@ const mongoose = require('mongoose');
 const mealsSchema = new mongoose.Schema({
     meal: { type: String, required: true, index: true },    // Use meal name as index
     image: { type: String, required: true },
-    description: { type: String, required: true }
+    description: { type: String, required: true },
+    rate: {type: Number, required: true}
 });
 
 // Compile the Schema into a Mongoose model and export it
-const Meal = mongoose.model('Meal', mealsSchema, 'meal');
-module.exports = Meal;
+const Meals = mongoose.model('Meals', mealsSchema, 'meals');
+module.exports = Meals;

@@ -1,21 +1,21 @@
 /* ====================================================================
   File: cartPricing.js
-  Description: Client-side JavaScript for managing the travel cart.
+  Description: Client-side JavaScript for managing the cart.
   Author: Daniel Gorelkin
   Version: 1.0
   Created: 2025-11-13
   Updated: NA
 
-FIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIXMEFIX
-
-
   Purpose:
     - This file contains JavaScript code that runs in the browser to handle 
-        adding selected items to the shopping cart.
-    - It listens for form submissions on "Add to Cart" buttons, sends POST 
-        requests to the server, and provides user feedback based on the server's response.
-    - The code ensures a smooth user experience by disabling buttons during 
-        processing and handling errors gracefully.
+        increasing, decreasing, and deleting selected items in the shopping cart.
+    - It listens to the dynamically defined buttons from the btn-quantity class.
+    - With each button clicked, data retrieved and sent to the cart API controller
+      via a PUT request while carrying the data in a body message.
+    - Only after the server/database responds that the request was accepted, the module updates
+      the item quantity via a Jquery call without reloading the page.
+    - Same functionality as above is applied to the delete button with a DELETE call, while 
+      updating the page to GET an updated JSON list of items upon successful item deletion from the DB.
 ===================================================================== */
 
 // Get all the buttons by class from the Cart page.

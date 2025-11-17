@@ -30,7 +30,7 @@ const News = require('./newsSchema');
 const About = require('./aboutSchema');
 const Contact = require('./contactSchema');
 
-// Read seed data drom the json files
+// Read seed data from the json files
 var items = JSON.parse(fs.readFileSync('./data/index.json', 'utf8'));
 var trips = JSON.parse(fs.readFileSync('./data/trips.json', 'utf8'));
 var rooms = JSON.parse(fs.readFileSync('./data/rooms.json', 'utf8'));
