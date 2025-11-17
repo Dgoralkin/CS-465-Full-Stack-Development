@@ -49,6 +49,8 @@ export class Login {
     }
   }
 
+  loading: boolean = false; 
+
   private doLogin(): void {
     let newUser = {
       name: this.credentials.name,
@@ -58,19 +60,24 @@ export class Login {
     console.log('LoginComponent::doLogin');
     // console.log(this.credentials);
 
-    this.Authentication.login(newUser, this.credentials.password);
+    // Start loading
+    this.loading = true;
 
-    if(this.Authentication.isLoggedIn()){
-      // console.log('Router::Direct'); 
-      this.router.navigate(['']);
-    } else {
-      var timer = setTimeout(() => {
-        if(this.Authentication.isLoggedIn()){
-          console.log('Router::Pause');
-          this.router.navigate(['']);
+    // Calls the login method from the Authentication service and waits for the login HTTP request.
+    // On success, token is saved and user is redirected to the main page. Display message if can't authenticate.
+    this.Authentication.login(newUser, this.credentials.password)
+      .subscribe({
+        next: (response) => {
+          console.log('Login successful', response);
+          this.loading = false;
+          this.router.navigate(['']); // Redirect to root (or protected page)
+        },
+        error: (err) => {
+          console.error('Login failed', err);
+          this.loading = false;
+          window.alert("Can\'t log you in. Check Username/Password or Register!");
         }
-      },3000);
+      });
     }
-  }
 
 }
