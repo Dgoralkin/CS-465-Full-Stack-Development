@@ -33,40 +33,27 @@ const mongoose = require("mongoose");
 const allCartItemsList = async (req, res) => {
     try {
 
-        // Query the DB with get all items from the cart aggregated by collection.
-        const query = await DB_Cart.aggregate([
-        {
-            $group: {                       // Groups all cart documents by the field dbCollection
-            _id: "$dbCollection",
-            items: { $push: "$$ROOT" }
-            }
-        },
-        {
-            $addFields: {
-            sortOrder: {
-                // Add a custom sorting field to each collection
-                $switch: {
-                branches: [
-                    { case: { $eq: ["$_id", "travel"] }, then: 1 },
-                    { case: { $eq: ["$_id", "rooms"] }, then: 2 },
-                    { case: { $eq: ["$_id", "meals"] }, then: 3 }
-                ],
-                default: 99
-                }
-            }
-            }
-        },
-        { $sort: { sortOrder: 1 } },                // Sorts all groups by sortOrder, ascending:
-        { $unwind: "$items" },                      // Unwind (flatten) the item arrays
-        { $replaceRoot: { newRoot: "$items" } }     // Remove the unwanted wrapper to get the actual document
-        ]);
+    // Query the DB with get all items from the cart aggregated by collection.
+    const query = await DB_Cart.find({}).lean().exec();
 
-        // If no results found, still return 200 but with a response message
-        if (!query || query.length === 0) {
-            return res.status(200).json({ message: "No results found" });
-        }
-        // Otherwise, return 200 OK and a json result
-        return res.status(200).json(query);
+    // Define the desired rendering order
+    const order = {
+    travel: 1,
+    rooms: 2,
+    meals: 3
+    };
+
+    // Sort the results with JavaScript with a Timsort hybrid sorting algorithm. (mix of Merge and Insertion Sort -> O(n log n))
+    query.sort((a, b) => {
+    return order[a.dbCollection] - order[b.dbCollection];
+    });
+
+    // If no results found, still return 200 but with a response message
+    if (!query || query.length === 0) {
+        return res.status(200).json({ message: "No results found" });
+    }
+    // Otherwise, return 200 OK and a json result
+    return res.status(200).json(query);
 
     } catch (err) {
         console.error("Error retrieving trips:", err);
