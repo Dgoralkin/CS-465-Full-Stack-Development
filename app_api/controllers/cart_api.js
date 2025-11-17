@@ -26,13 +26,40 @@ const mongoose = require("mongoose");
 //          *** Methods for GET ***         //
 // ======================================== //
 
-// GET: /cart -> Endpoint lists all trips from DB.cart collection.
+// GET: /cart -> Endpoint lists all various items from DB.cart collection.
 // List all the existing items in user's personal cart.
-// Returns JSON array of all existing objects in the cart.
+// Returns JSON flatten array of all existing objects in the cart ordered by trip -> room -> meal.
+// Expected response format: [{all Travel objects}, {all Room objects}, {all Meals objects}]
 const allCartItemsList = async (req, res) => {
     try {
-        // Query the DB with get all items from the cart
-        const query = await DB_Cart.find({}).exec();
+
+        // Query the DB with get all items from the cart aggregated by collection.
+        const query = await DB_Cart.aggregate([
+        {
+            $group: {                       // Groups all cart documents by the field dbCollection
+            _id: "$dbCollection",
+            items: { $push: "$$ROOT" }
+            }
+        },
+        {
+            $addFields: {
+            sortOrder: {
+                // Add a custom sorting field to each collection
+                $switch: {
+                branches: [
+                    { case: { $eq: ["$_id", "travel"] }, then: 1 },
+                    { case: { $eq: ["$_id", "rooms"] }, then: 2 },
+                    { case: { $eq: ["$_id", "meals"] }, then: 3 }
+                ],
+                default: 99
+                }
+            }
+            }
+        },
+        { $sort: { sortOrder: 1 } },                // Sorts all groups by sortOrder, ascending:
+        { $unwind: "$items" },                      // Unwind (flatten) the item arrays
+        { $replaceRoot: { newRoot: "$items" } }     // Remove the unwanted wrapper to get the actual document
+        ]);
 
         // If no results found, still return 200 but with a response message
         if (!query || query.length === 0) {

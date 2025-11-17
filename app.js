@@ -78,7 +78,7 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Enable CORS (Cross Origin Resource Sharing) for resource sharing to hook Angular SPA
-// Define local and production access points to choose from
+// Define local and production access points to choose from to allow the Admin app to access the database.
 const allowedOrigins = [
   'https://admin-travlr-dg.onrender.com',
   'http://localhost:4200'

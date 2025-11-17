@@ -13,7 +13,7 @@
     - Fetch data from the database through an API endpoint with a fallback option.
 =========================================================================================== */
 
-// Build an API URL from envirable variable (fallback to localhost) and the /api path.
+// Build an API URL from environment variable (fallback to localhost) and the /api path.
 const apiHost = process.env.API_HOST || "http://localhost:3000";
 const roomsEndpoint = `${apiHost}/api/rooms`;
 

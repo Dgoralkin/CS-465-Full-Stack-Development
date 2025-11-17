@@ -8,10 +8,11 @@
 
   Purpose:
     - Part of the Travlr CMS project
-    - Responsible for rendering the list of all the existing items from the cart.
+    - Responsible for rendering the list of all the existing items from the cart collection.
     - Dynamically displays cart data received from the controller
       via a JSON array passed in the rendering context.
-    - Functionality increases/decreases and removes items from the cart and the database.
+    - Functionality dynamically creates buttons to increases/decreases and remove items from 
+      the database and the cart page consequently.
 ===================================================================== -->
 
 <!DOCTYPE html>
@@ -72,7 +73,7 @@
                                   <span class="item-quantity" data-id="{{this._id}}">{{this.quantity}}</span>
 
                                     <!--  Increase/decrease/remove quantity and remove functionality buttons -->
-                                    <!--  Buttons trigger the EventListener in public/javascripts/cart.js -->
+                                    <!--  Buttons trigger the EventListener in public/javascripts/updateCartItem.js -->
                                     <button 
                                       type="button" 
                                       class="btn-quantity decrease" 
@@ -120,7 +121,7 @@
 
     <!-- JavaScript to handle cart calculation logic -->
     <!-- Script located in public/javascripts/cart.js -->
-    <script src="/javascripts/cart.js"></script>
+    <script src="/javascripts/updateCartItem.js"></script>
 
   </body>
 </html>
