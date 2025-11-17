@@ -21,8 +21,7 @@ import { Authentication } from '../services/authentication';
   standalone: true,
   imports: [CommonModule, TripCardComponent],
   templateUrl: './trip-listing.html',
-  styleUrl: './trip-listing.css',
-  providers: [TripData]
+  styleUrl: './trip-listing.css'
 })
 
 export class TripListing implements OnInit{
@@ -40,16 +39,16 @@ export class TripListing implements OnInit{
     console.log('trip-listing constructor');
   }
 
-  // method to read data from the db and returns a list of all awailable trips.
+  // method to read data from the db and returns a list of all available trips.
   private getStuff(): void {
-    this.tripDataService.getTrips()     // Reads data from: url = 'http://localhost:3000/api/travel';
+    this.tripDataService.getTrips()     // Reads data from: url = 'https://travlr-dg.onrender.com/api/travel';
     .subscribe({
       next: (value: any) => {
         this.trips = value;
         if(value.length > 0) {
           this.message = 'There are ' + value.length + ' trips available.';
         } else{
-          this.message = 'There were no trips retireved from the database';
+          this.message = 'There were no trips retrieved from the database';
         }
         console.log(this.message);
         }, error: (error: any) => {

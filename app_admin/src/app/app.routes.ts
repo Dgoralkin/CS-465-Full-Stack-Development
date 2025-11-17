@@ -1,6 +1,4 @@
 import { Routes, provideRouter } from '@angular/router';
-import { importProvidersFrom } from '@angular/core';
-import { HttpClientModule } from '@angular/common/http';
 
 // Components
 import { AddTrip } from './add-trip/add-trip';
@@ -8,12 +6,14 @@ import { TripListing } from './trip-listing/trip-listing';
 import { EditTrip } from './edit-trip/edit-trip';
 import { Login } from './login/login';
 import { Register } from './register/register';
+import { AuthGuard } from './guards/auth-guard';
 
 // Routes
 export const routes: Routes = [
   { path: 'add-trip', component: AddTrip },
   { path: 'edit-trip', component: EditTrip },
-  { path: '', component: TripListing, pathMatch: 'full' },
+  { path: '', component: TripListing, pathMatch: 'full', canActivate: [AuthGuard] },  // canActivate require user to be logged in.
+  { path: 'travel', component: TripListing },
   { path: 'login', component: Login },
   { path: 'register', component: Register }
 ];
@@ -21,7 +21,6 @@ export const routes: Routes = [
 // App configuration for bootstrapApplication
 export const appConfig = {
   providers: [
-    provideRouter(routes),
-    importProvidersFrom(HttpClientModule) // <-- important for your the service
+    provideRouter(routes)
   ]
 };

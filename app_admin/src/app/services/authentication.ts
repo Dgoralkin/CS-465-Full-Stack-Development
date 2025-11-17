@@ -6,6 +6,7 @@ import { User } from '../models/user';                  // Provides us a means o
 import { AuthResponse } from '../models/auth-response'; // Provides representation for our JWT
 import { TripData } from '../services/trip-data';
 import { Router } from '@angular/router';
+import { Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -70,17 +71,17 @@ export class Authentication {
   /*  Login method that leverages the login method in tripDataService 
     Because that method returns an observable, we subscribe to the
     result and only process when the Observable condition is satisfied */
-  public login(user: User, passwd: string) : void {
-    this.tripDataService.login(user,passwd).subscribe({
-      next: (value: any) => { if(value) {
-        console.log("In Authentication.login:");
-        console.log("value: ", value);
-        this.authResp = value;
-        this.saveToken(this.authResp.token);
-      }
-    },
-      error: (error: any) => { console.log('Error: ' + error); }
-    })
+  public login(user: User, passwd: string): Observable<AuthResponse> {
+    return this.tripDataService.login(user, passwd).pipe(
+      tap((value: AuthResponse) => {
+        if (value) {
+          console.log('In Authentication.login:');
+          console.log('value: ', value);
+          this.authResp = value;
+          this.saveToken(this.authResp.token);
+        }
+      })
+    );
   }
 
   /*  Because that method returns an observable, we subscribe to the

@@ -51,11 +51,11 @@ const contactUsApiRouter = require('./app_api/routes/contact_api');   // Path to
 const cartApiRouter = require('./app_api/routes/cart_api');           // Path to the contact api
 const authRoutes = require("./app_api/routes/authentication");        // Path to the authentication api
 
-// Enable handlebars to render in multipal pages
-const handelbars = require('hbs');
+// Enable handlebars to render in multiple pages
+const handlebars = require('hbs');
 
-// Enable helper for handelbars
-handelbars.registerHelper('eq', function(a, b) {
+// Enable helper for handlebars
+handlebars.registerHelper('eq', function(a, b) {
   return a === b;
 });
 
@@ -65,7 +65,7 @@ const app = express();
 app.set('views', path.join(__dirname, 'app_server', 'views'));    // Update the path for the new app_server dir
 
 // register the call to enable partials handlebars:
-handelbars.registerPartials(path.join(__dirname, 'app_server', 'views', 'partials'));
+handlebars.registerPartials(path.join(__dirname, 'app_server', 'views', 'partials'));
 app.set('view engine', 'hbs');
 
 // Setup middleware
@@ -78,9 +78,19 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Enable CORS (Cross Origin Resource Sharing) for resource sharing to hook Angular SPA
+// Define local and production access points to choose from
+const allowedOrigins = [
+  'https://admin-travlr-dg.onrender.com',
+  'http://localhost:4200'
+];
+
 app.use((req, res, next) => {
-  const allowedOrigin = 'https://admin-travlr.onrender.com';
-  res.header('Access-Control-Allow-Origin', allowedOrigin);
+  const origin = req.headers.origin;
+
+  if (allowedOrigins.includes(origin)) {
+    res.header('Access-Control-Allow-Origin', origin);
+  }
+
   res.header(
     'Access-Control-Allow-Headers',
     'Origin, X-Requested-With, Content-Type, Accept, Authorization'
@@ -88,9 +98,9 @@ app.use((req, res, next) => {
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.header('Access-Control-Allow-Credentials', 'true');
 
+  // Required for preflight requests
   if (req.method === 'OPTIONS') {
-    console.log('Preflight request received for:', req.originalUrl);
-    return res.sendStatus(204);
+    return res.sendStatus(200);
   }
 
   next();
