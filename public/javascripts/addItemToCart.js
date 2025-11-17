@@ -72,7 +72,7 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
             // Use the Icon font from Bootstrap library 
             button.disabled = false;
             button.innerHTML = '<i class="bi bi-bag-check"></i> Already in cart!';
-            button.style.left = '265px';
+            button.style.left = '240px';
             button.style.backgroundColor = 'var(--secondary-color)';
         }
         });

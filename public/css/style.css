@@ -211,6 +211,16 @@ html, body {
     background-color: #ff1f1f;
 }
 
+/* Cart summary table */
+#cart-summary-header {
+    background: linear-gradient(90deg, var(--footer-bg), var(--primary-color)) !important;
+}
+
+.col-md-6.fixed-width {
+  max-width: 800px;
+  min-width: 400px;
+}
+
 
 /* ===============================
    Contact Form
@@ -340,6 +350,13 @@ textarea {
   text-decoration: underline;
 }
 
+/* Target all images inside #sidebar .section */
+#sidebar .section img {
+  width: 66%  !important;
+  height: 66%  !important;
+  object-fit: cover; /* keeps aspect ratio, crops if needed */
+}
+
 /* Testimonials */
 #testimonials p {
   font-style: italic;
@@ -370,13 +387,14 @@ textarea {
 .trip-header h2 {
   display: inline-block;
   margin: 0;
-  font-size: 1.5em;
+  font-size: 1.9em;
   line-height: 1.2;
 }
 
 .add-to-cart-btn {
   position: absolute;
-  left: 290px;
+  margin-top: -5px;
+  left: 270px;
   top: 0;
   background-color: var(--accent-color);
   color: var(--box-bg) !important;
@@ -483,6 +501,19 @@ textarea {
   #footer ul.navigation {
     flex-direction: horizontal;
   }
+  
+  /* Cart summary header table */
+  #cart-summary-header {
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)) !important;
+  }
+
+  /* Target all images inside #sidebar .section */
+  #sidebar .section img {
+    width: 100%  !important;
+    height: 100%  !important;
+    object-fit: cover; /* keeps aspect ratio, crops if needed */
+  }
+
 }
 
 /* ==========================================
@@ -511,5 +542,10 @@ textarea {
 
   body {
     font-size: 15px;
+  }
+
+  /* Cart summary header table */
+  #cart-summary-header {
+      background: linear-gradient(90deg, var(--primary-color), var(--secondary-color)) !important;
   }
 }

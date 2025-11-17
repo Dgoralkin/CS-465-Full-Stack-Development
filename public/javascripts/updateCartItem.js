@@ -16,6 +16,7 @@
       the item quantity via a Jquery call without reloading the page.
     - Same functionality as above is applied to the delete button with a DELETE call, while 
       updating the page to GET an updated JSON list of items upon successful item deletion from the DB.
+    - Triggers the loadCartSummary() to refresh cart summary table.
 ===================================================================== */
 
 // Get all the buttons by class from the Cart page.
@@ -57,6 +58,9 @@ quantityButtons.forEach(button => {
       // Also update item's quantity value in the HTML page if the database has been updated successfully.
       if (updateResponse.ok) {
         clickedItem.textContent = itemQuantity;
+
+        // Call to reload cart summary table via the loadCartSummary method from javascript/calculateCartTotal.js.
+        loadCartSummary();
       }
 
       // Remove item from the cart upon clicked delete button.

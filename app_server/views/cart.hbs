@@ -32,82 +32,116 @@
         {{> header }}
 
         <!-- The main contents block.
-        Displays all travel packages using the "trips" array passed from the controller.
-        Expected structure:
-        trips: [{ _id: string code: String, name: String, start: Date , resort: String, 
-        perPerson: Number , image: String, description: String, description_details: String }] -->
-        <div id="contents">
-          <div class="box">
-            <div>
-              <div class="body">
-                <!-- Page Title -->
-                <h1>Your Shopping Cart</h1>
-                <h3></h3>
+        Displays all cart items using the passed array from the controller. -->
+        <div id="contents" class="container my-4">
+          <div class="row">
 
-                <!-- Loop through each cart object and render its data.
-                Each cart object includes an image, name, and description text.
-                Image fallback is applied if the specified file is missing. -->
-                <ul id="sites">
-                  {{#if cartItems.length}}
-                    <ul>
-                      {{#each cartItems}}
-                        <li>
-                          <a href="/api/{{this.dbCollection}}/{{this.code}}">
-                            <img 
-                              src="images/{{this.image}}" 
-                              alt="Img" 
-                              onerror="this.onerror=null;this.src='images/logo.png';"
-                            />
-                          </a>
+            <!-- Left column: cart items list -->
+            <div class="col-md-6">
+              <div class="box">
+                <div>
+                  <div class="body">
+                    <h1>Your Shopping Cart</h1>
 
-                          <div class="trip-header">
-                            <h2>
-                              <a href="/api/travel/{{this.code}}">{{this.name}}</a>
-                            </h2>
+                    <!-- Cart items list -->
+                    <!-- Loop through each cart object and render its data.
+                    Each cart object includes an image, name, and description text.
+                    Image fallback is applied if the specified file is missing. -->
+                    <ul id="sites">
+                      {{#if cartItems.length}}
+                        {{#each cartItems}}
+                          <li>
+                            <a href="/api/{{this.dbCollection}}/{{this.code}}">
+                              <img 
+                                src="images/{{this.image}}" 
+                                alt="Img" 
+                                onerror="this.onerror=null;this.src='images/logo.png';"
+                                style="width: 66%; height: 100%; object-fit: cover;"
+                              />
+                            </a>
+                            <div class="trip-header">
+                              <h2>
+                                <a href="/api/travel/{{this.code}}">{{this.name}}</a>
+                              </h2>
 
-                            <!-- See public/javascripts/cart.js for handling logic and functionality -->
-                            <h3 class="cart-item-controls">
-                              <div>
-                                <p>
-                                  ${{this.rate}} x 
-                                  <span class="item-quantity" data-id="{{this._id}}">{{this.quantity}}</span>
-
+                              <!-- See public/javascripts/cart.js for handling logic and functionality -->
+                              <h3 class="cart-item-controls">
+                                <div>
+                                  <p>
+                                    ${{this.rate}} x 
+                                    <span class="item-quantity" data-id="{{this._id}}">{{this.quantity}}</span>
+                                    
                                     <!--  Increase/decrease/remove quantity and remove functionality buttons -->
                                     <!--  Buttons trigger the EventListener in public/javascripts/updateCartItem.js -->
-                                    <button 
-                                      type="button" 
-                                      class="btn-quantity decrease" 
-                                      data-id="{{this._id}}" 
-                                      aria-label="Decrease quantity"><i class="bi bi-dash-circle"></i></button>
+                                    <button type="button" class="btn-quantity decrease" data-id="{{this._id}}">
+                                      <i class="bi bi-dash-circle"></i>
+                                    </button>
+                                    <button type="button" class="btn-quantity increase" data-id="{{this._id}}">
+                                      <i class="bi bi-plus-circle"></i>
+                                    </button>
+                                    <button type="button" class="btn-quantity remove" data-id="{{this._id}}">
+                                      <i class="bi bi-trash"></i>
+                                    </button>
+                                  </p>
+                                </div>
+                              </h3>
 
-                                    <button 
-                                      type="button" 
-                                      class="btn-quantity increase" 
-                                      data-id="{{this._id}}" 
-                                      aria-label="Increase quantity"><i class="bi bi-plus-circle"></i></button>
-
-                                    <button 
-                                      type="button" 
-                                      class="btn-quantity remove" 
-                                      data-id="{{this._id}}" 
-                                      aria-label="Remove item"><i class="bi bi-trash"></i></button>
-                                </p>
-                              </div>
-                            </h3>
-
-                          </div>
-                          <p>{{this.description}}</p>
-                          <p>{{this.description_details}}</p>
-                        </li>
-                      {{/each}}
+                            </div>
+                            <p>{{this.description}}</p>
+                            <p>{{this.description_details}}</p>
+                          </li>
+                        {{/each}}
+                      {{else}}
+                        <p>Your cart is empty. <a href="/travel">Start shopping now!</a>!</p>
+                      {{/if}}
                     </ul>
-                  {{else}}
-                    <p>Your cart is empty. <a href="/travel">Start shopping now!</a>!</p>
-                  {{/if}}
-                </ul>
 
+                  </div>
+                </div>
               </div>
             </div>
+
+            <!-- Right column: cart summary table -->
+            <!-- Table to display cart summary
+            Calculations done in javascripts/calculateCartTotal.js and populated dynamically
+            Triggered by the DOMContentLoaded listener in the server-side controller. -->
+
+            <div class="col-md-6 fixed-width">
+              <div class="box">
+                <div id="cart-summary" class="card shadow-sm">
+                  <div class="card-header bg-primary text-white"  id="cart-summary-header">
+                    <h2 class="mb-0">Your Cart</h2>
+                  </div>
+                  <div class="card-body p-0">
+                    <div class="table-responsive">
+                      <table class="table table-striped table-hover mb-0" id="cart-table">
+                        
+                        <thead class="table-light">
+                          <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Qty</th>
+                            <th>Total</th>
+                          </tr>
+                        </thead>
+
+                        <tbody>
+                          <!-- Dynamic rows inserted here -->
+                        </tbody>
+
+                        <tfoot class="table-light">
+                          <tr>
+                            <td colspan="3" class="text-end"><strong>Grand Total</strong></td>
+                            <td id="grand-total">$0.00</td>
+                          </tr>
+                        </tfoot>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
 
@@ -120,8 +154,12 @@
     </div>
 
     <!-- JavaScript to handle cart calculation logic -->
+
     <!-- Script located in public/javascripts/cart.js -->
     <script src="/javascripts/updateCartItem.js"></script>
+
+    <!-- Script located in public/javascripts/calculateCartTotal.js -->
+    <script src="/javascripts/calculateCartTotal.js"></script>
 
   </body>
 </html>
