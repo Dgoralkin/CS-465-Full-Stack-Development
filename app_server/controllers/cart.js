@@ -17,13 +17,21 @@
 const apiHost = process.env.API_HOST || "http://localhost:3000";
 const CartEndpoint = `${apiHost}/api/cart`;
 
-const options = {
-    method: "GET",
-    headers: {Accept: "application/json"}
-}
 
 // Controller function to handle requests to the cart page
 const showCart = async function (req, res, next) {
+
+    // Read unique user Id parameter from the cookie
+    // and pass it to the art_api controller to read user specific cart only.
+    const user_id = req.cookies.user_id;
+    
+    const options = {
+        method: "GET",
+        headers: {
+            Accept: "application/json",
+            Cookie: `user_id=${user_id}`
+        }
+    }
 
     // Make a GET request to the API endpoint to fetch items
     await fetch(CartEndpoint, options)
@@ -42,7 +50,7 @@ const showCart = async function (req, res, next) {
         if (!Array.isArray(json)) {
             json = {}
             message = "No trips were found in the database.";
-            // console.log(message);
+            console.log(message);
         }
 
         // Render the cart page view with the fetched items in the cart and a message (Response 200 OK)

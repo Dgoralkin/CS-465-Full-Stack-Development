@@ -25,10 +25,14 @@ const jwt = require('jsonwebtoken');
 // Structure of the user collection in MongoDB
 // Define the user collection schema.
 const userSchema = new mongoose.Schema({
-    email: { type: String, unique: true, required: true },      // Use email as unique identifier
-    name: { type: String, required: true },
-    hash: String,
-    salt: String
+    fName: { type: String, default: "Guest"},
+    lName: { type: String, default: null},
+    hash: { type: String },
+    salt: { type: String },
+    email: { type: String, unique: true, default: Date.now },           // Use email as unique identifier uses date as a unique placeholder.
+    isRegistered: { type: Boolean, default: false },                    // An unregistered and not an Admin user is a Guest user.
+    isAdmin: { type: Boolean, default: false },
+    userSince: {type: Date, default: null}
 });
 
 // Method to set the password for this record.
@@ -58,7 +62,7 @@ userSchema.methods.validPassword = function(password) {
 // The token includes the user's _id, email, and name, and expires in 1 hour
 userSchema.methods.generateJWT = function() {
     return jwt.sign(                                                        // Payload for our JSON Web Token
-        {_id: this._id, email: this.email, name: this.name},
+        {_id: this._id, email: this.email, name: this.fName},
         process.env.JWT_SECRET,                                             // SECRET stored in .env file
         { expiresIn: '1h' }                                                 // Token expires an hour from creation
     );

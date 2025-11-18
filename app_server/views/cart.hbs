@@ -44,7 +44,9 @@
                     <h1>Your Shopping Cart</h1>
 
                     <!-- Cart items list -->
-                    <!-- Loop through each cart object and render its data.
+                    <!-- Loop dynamically through each cart object and render its data.
+                    object could be fetched from any collection in the database via
+                    findOneCartItem() @ /cart/:dbCollection/:itemId
                     Each cart object includes an image, name, and description text.
                     Image fallback is applied if the specified file is missing. -->
                     <ul id="sites">
@@ -61,7 +63,7 @@
                             </a>
                             <div class="trip-header">
                               <h2>
-                                <a href="/api/travel/{{this.code}}">{{this.name}}</a>
+                                <a href="/api/{{this.dbCollection}}/{{this.code}}">{{this.name}}</a>
                               </h2>
 
                               <!-- See public/javascripts/cart.js for handling logic and functionality -->
