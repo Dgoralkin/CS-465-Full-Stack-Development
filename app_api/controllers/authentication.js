@@ -14,7 +14,6 @@
 // Import required modules
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");     // Methods to set JWT, register and validate user password
-const passport = require('passport');       // Passport for authentication strategies
 
 // ======================================== //
 //       *** Authentication Methods ***     //
@@ -109,9 +108,32 @@ const authenticateJWT = (req, res, next) => {
     });
 };
 
+// Creates a blank user account for guest users managed by unique user _id.
+// Create a signed session token for the guest user to be stored in localStorage.
+// Return the new guest user object and the signed token.
+const registerGuest = async (req, res) => {
+    
+    try {
+        // Create new user object from User model
+        const guestUser = new User();
+
+        // Save the guest user to the database
+        await guestUser.save();
+
+        // Generate a unique token for guest User.
+        const token = guestUser.generateJWT();
+
+        return res.status(200).json({ guestUser: guestUser, token });
+
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
 // Export the controller methods
 module.exports = {
     register,
     login,
-    authenticateJWT
+    authenticateJWT,
+    registerGuest
 };

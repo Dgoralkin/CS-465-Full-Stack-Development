@@ -48,11 +48,13 @@ quantityButtons.forEach(button => {
         itemQuantity += 1;
       }
 
+      const user_id = localStorage.user_id;
+
       // Push the update to database through the defined API PUT request and a body message.
       const updateResponse = await fetch('/api/cart', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ _id: itemID, quantity: itemQuantity })
+        body: new URLSearchParams({ user_id: user_id , _id: itemID, quantity: itemQuantity })
       });
 
       // Also update item's quantity value in the HTML page if the database has been updated successfully.
@@ -69,9 +71,8 @@ quantityButtons.forEach(button => {
         const deleteResponse = await fetch('/api/cart', {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ _id: itemID })
+          body: new URLSearchParams({ user_id: user_id, _id: itemID })
         });
-
         // console.log("deleteResponse:", deleteResponse);
 
         // Also update item's quantity value in the HTML page if the database has been updated successfully.

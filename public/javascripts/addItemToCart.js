@@ -15,6 +15,41 @@
         processing and handling errors gracefully.
 ===================================================================== */
 
+// Creates a new user account for guest user via the /api/guest endpoint
+// Retrieves a signed JWT and stores it and the guest user _id 
+// in the localStorage to start session.
+async function isGuestUser() {
+
+    // Create a new user account for guest user via the /api/guest endpoint.
+    // Get session a JWT and store it in the localStorage to start session.
+    try {
+        const res = await fetch("/api/guest", {
+            method: "POST",
+            headers: { "Content-type": "application/json" }
+        });
+
+        const response = await res.json();
+        // console.log("In isGuestUser, no token was found: user account created:", response);
+
+        // Save token and guest user _id in localStorage.
+        localStorage.setItem("token", response.token);
+        localStorage.setItem("user_id", response.guestUser._id);
+
+        // Set cookie to pass parameters to the server side controllers.
+        const guestId = response.guestUser._id;
+        document.cookie = `user_id=${guestId}; path=/; SameSite=Lax`;
+        console.log("cookie:", document.cookie);
+
+        // Return guest user id
+        return response.guestUser._id
+        
+    } catch (err) {
+        // Display error message.
+        console.error('Error creating guest user account!', err);
+    }
+    return null;
+}
+
 // Attach event listeners to all forms with the class 'add-to-cart-form'
 document.querySelectorAll('.add-to-cart-form').forEach(form => {
 
@@ -23,6 +58,18 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
 
         // Prevent the default form submission behavior to handle it via JavaScript and stay on the page
         e.preventDefault();
+
+        // Check if user is registered via the session token
+        // If no user account exist, register user as a guest and set a session token in the localStorage.
+        if (!localStorage.token) {
+            const guestUser_id = await isGuestUser();
+            console.log("User account created -> guestUser_id:", guestUser_id, "\nlocalStorage.token:", localStorage.token);
+        } else {
+            console.log("User account exist -> user_id:", localStorage.user_id, "\nlocalStorage.token:", localStorage.token);
+        }
+
+        // Get user id from the session data.
+        const user_id = localStorage.user_id
 
         // Extract the item ID, code, name, and the DB.collection from the form's data attributes
         const itemId = form.querySelector('input[name="_id"]').value;
@@ -42,15 +89,16 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
         button.textContent = 'Adding...';
 
         try {
-            // Send a POST request to the server to add the trip to the cart
+            // Send a POST request to the server to add the item to the cart
             const response = await fetch('/api/cart', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
 
             // Include the collection and trip ID in the request body
             body: JSON.stringify({
+                user_id: user_id,
                 collection: collection, 
-                itemId: itemId, 
+                item_id: itemId, 
                 itemCode: itemCode, 
                 itemName: itemName,
                 itemRate: itemRate,

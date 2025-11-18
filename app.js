@@ -31,6 +31,7 @@ require('./app_api/models/db');
 // the file into our memory space
 require('dotenv').config();
 
+
 // Setup routes for page navigation
 const indexRouter = require('./app_server/routes/index');         // Update the path for the homepage
 const travelRouter = require('./app_server/routes/travel');       // Update the path for the travel page

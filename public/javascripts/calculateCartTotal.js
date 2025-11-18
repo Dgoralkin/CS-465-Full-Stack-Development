@@ -23,6 +23,8 @@ async function loadCartSummary() {
 
     let grandTotal = 0;
 
+    // For every row in the summary table, calculate the sum of item * quantity as grandTotal
+    // and populate the html row with data. Update the inner HTML for every row and append as child.
     cartItems.forEach(item => {
       const total = item.rate * item.quantity;
       grandTotal += total;
