@@ -23,11 +23,10 @@ export class TripData {
 
   // Define URLs for development usage (localhost)
   private baseUrl = `http://localhost:3000/api`;
-  
-  tripsUrl = 'https://cs-465-full-stack-development.onrender.com/api/travel';
   // private tripsUrl = `${this.baseUrl}/travel`;
 
-  
+  tripsUrl = 'https://cs-465-full-stack-development.onrender.com/api/travel';
+
   // Constructor
   constructor( 
     private http: HttpClient, 
