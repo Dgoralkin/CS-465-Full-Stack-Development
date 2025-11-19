@@ -15,7 +15,7 @@ import { User } from '../models/user';
 export class Register implements OnInit {
 
   public formError: string = '';
-  credentials = { fName: '', email: '', password: '' };
+  credentials = { fName: '', lName: '', email: '', password: '', isRegistered: false, isAdmin: false };
 
   constructor(
     private router: Router,
@@ -34,10 +34,10 @@ export class Register implements OnInit {
 
     const newUser: User = {
       fName: this.credentials.fName,
-      lName: "Gorelkin",
+      lName: this.credentials.lName,
       email: this.credentials.email,
-      isRegistered: false,
-      isAdmin: false,
+      isRegistered: this.credentials.isRegistered,
+      isAdmin: this.credentials.isAdmin,
       userSince: new Date()
     };
 

@@ -32,12 +32,11 @@ const register = async (req, res) => {
     try {
         // Create new user object from User model
         const user = new User({
-            fName: "req.body.fName",        // Fetch username from request body
-            lName: "req.body.lName",        // Fetch username from request body
-            email: "req.body.email",      // Fetch password from request body
+            fName: req.body.fName,                  // Fetch username from request body
+            lName: req.body.lName,                  // Fetch username from request body
+            email: req.body.email,                  // Fetch password from request body
             isRegistered: req.body.isRegistered,
-            isAdmin: req.body.isAdmin,
-            userSince: req.body.userSince
+            isAdmin: req.body.isAdmin
         });
 
         // Salt and hash the password using setPassword method from user model
