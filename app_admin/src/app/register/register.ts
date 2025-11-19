@@ -1,24 +1,23 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from "@angular/forms";
-import { Router } from '@angular/router';
 import { Authentication } from '../services/authentication';
 import { User } from '../models/user';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './register.html',
   styleUrls: ['./register.css']
 })
 export class Register implements OnInit {
 
   public formError: string = '';
-  credentials = { fName: '', lName: '', email: '', password: '', isRegistered: false, isAdmin: false };
+  credentials = { fName: '', lName: '', email: '', password: '', isRegistered: true, isAdmin: true };
 
   constructor(
-    private router: Router,
     private authentication: Authentication
   ) { }
 
@@ -27,7 +26,7 @@ export class Register implements OnInit {
   public onRegisterSubmit(): void {
     this.formError = '';
 
-    if (!this.credentials.fName || !this.credentials.email || !this.credentials.password) {
+    if (!this.credentials.fName || !this.credentials.lName || !this.credentials.email || !this.credentials.password) {
       this.formError = 'All fields are required, please try again';
       return;
     }

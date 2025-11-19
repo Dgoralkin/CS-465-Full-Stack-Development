@@ -41,7 +41,7 @@ export class Login {
 
   public onLoginSubmit(): void {
     this.formError = '';
-    if (!this.credentials.email || !this.credentials.password || !this.credentials.fName) {
+    if (!this.credentials.email || !this.credentials.password || !this.credentials.fName ) {
       this.formError = 'All fields are required, please try again';
       this.router.navigateByUrl('#'); // Return to login page
     } else {

@@ -24,7 +24,7 @@ export class Authentication {
   // Variable to handle Authentication Responses
   authResp: AuthResponse = new AuthResponse();
 
-  // Get our token from our Storage provider as key for our token 'travlr-token'
+  // Get our token from our Storage provider as key for our token 'travlr-token' / Define token name
   public getToken(): string {
     let out: any;
     out = this.storage.getItem('travlr-token');
@@ -64,7 +64,7 @@ export class Authentication {
     has checked to make sure that the user isLoggedIn. */
   public getCurrentUser(): User {
     const token: string = this.getToken();
-    const { email, fName } = JSON.parse(atob(token.split('.')[1]));
+    const { email, fName } = JSON.parse(atob(token.split('.')[1]));         // Pass the email, fName to the Token
     return { email, fName } as User;
   }
 
