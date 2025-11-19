@@ -1,6 +1,6 @@
 /* ========================================================================================
   File: cart_api.js
-  Description: Controller for travel-related API endpoints.
+  Description: Controller for cart API endpoints.
   Author: Daniel Gorelkin
   Version: 1.1
   Created: 2025-08-15
@@ -8,9 +8,13 @@
 
   Purpose:
     - This file contains controller methods for handling API requests related to the travel collection.
-    - It includes methods for retrieving, adding, and updating trips in the travel collection.
+    - It includes methods for retrieving, adding, deleting and updating trips, rooms, and meals in the cart collection.
+    - Returns a JSON array to the requesting source.
     - Each method interacts with the Mongoose model to perform database operations.
-    - Proper error handling and response formatting are implemented.
+    - The records in the cart are maintained by cookies for unregistered (Guest) users.
+    - Data to the controllers passed through cookies and URL parameters for GET methods,
+      and through body message for the POST, PUT, and DELETE methods.
+    - Implements the Timsort hybrid sorting algorithm with O(n log n) Time Complexity.
 =========================================================================================== */
 
 // Import the Mongoose models for Cart, Travel, Rooms, and Meals collection

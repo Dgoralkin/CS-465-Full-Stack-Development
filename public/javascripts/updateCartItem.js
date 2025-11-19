@@ -1,6 +1,6 @@
 /* ====================================================================
   File: cartPricing.js
-  Description: Client-side JavaScript for managing the cart.
+  Description: Client-side JavaScript for managing cart item quantities.
   Author: Daniel Gorelkin
   Version: 1.0
   Created: 2025-11-13
@@ -8,7 +8,7 @@
 
   Purpose:
     - This file contains JavaScript code that runs in the browser to handle 
-        increasing, decreasing, and deleting selected items in the shopping cart.
+      increasing, decreasing, and deleting selected items in the shopping cart.
     - It listens to the dynamically defined buttons from the btn-quantity class.
     - With each button clicked, data retrieved and sent to the cart API controller
       via a PUT request while carrying the data in a body message.
