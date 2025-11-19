@@ -18,14 +18,15 @@ import { BROWSER_STORAGE } from '../storage';             // Gives access to our
 
 export class TripData {
 
-  // Define URLs for production usage (Hosted on Render.com)
-  // private baseUrl = `https://travlr-dg.onrender.com/api`;
-
+  /*
   // Define URLs for development usage (localhost)
   private baseUrl = `http://localhost:3000/api`;
-  // private tripsUrl = `${this.baseUrl}/travel`;
+  private tripsUrl = `${this.baseUrl}/travel`;
+  */
 
-  tripsUrl = 'https://cs-465-full-stack-development.onrender.com/api/travel';
+  // Define URLs for development usage (Hosted on Render.com)
+  private baseUrl = `https://travlr-dg.onrender.com/api`;
+  private tripsUrl = `${this.baseUrl}/travel`;
 
   // Constructor
   constructor( 

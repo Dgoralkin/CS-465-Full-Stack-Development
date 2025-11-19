@@ -23,16 +23,16 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 
 // Structure of the user collection in MongoDB
-// Define the user collection schema.
+// Define the user collection schema for users and admin.
 const userSchema = new mongoose.Schema({
-    fName: { type: String, default: "Guest"},
+    fName: { type: String, default: "Guest"},                           // Default Guest first name defined for unregistered users.
     lName: { type: String, default: null},
     hash: { type: String },
     salt: { type: String },
     email: { type: String, unique: true, default: Date.now },           // Use email as unique identifier uses date as a unique placeholder.
     isRegistered: { type: Boolean, default: false },                    // An unregistered and not an Admin user is a Guest user.
-    isAdmin: { type: Boolean, default: false },
-    userSince: { type: Date, default: Date.now }
+    isAdmin: { type: Boolean, default: false },                         // Used by the Angular Admin website for managing the app.  
+    userSince: { type: Date, default: Date.now }                        // Store first session date
 });
 
 // Method to set the password for this record.
@@ -46,9 +46,9 @@ userSchema.methods.setPassword = function(password){
     this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, 'sha512').toString('hex');
 };
 
-// Method to validate the password on this record. Check if a given password matches the stored one.
-// Compares the given password after hashing with the stored hash
-// Returns true if the password is valid, false otherwise
+// Method to validate the password on this record. Checks if a given password matches the stored one.
+// Compares the given password's hash with the stored hash.
+// Returns true if the password is valid (hash matches), false otherwise.
 userSchema.methods.validPassword = function(password) {
     var hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64, 'sha512').toString('hex');
     // console.log("Password is: ", this.hash === hash);
@@ -57,14 +57,19 @@ userSchema.methods.validPassword = function(password) {
     return this.hash === hash;
 };
 
-// Method to generate a JSON Web Token for the current record
+// Method to generate a JSON Web Token for the current session
 // Returns the generated JWT
-// The token includes the user's _id, email, and name, and expires in 1 hour
+// The token includes the user's _id, email, name, and roles. Expires in 1 hour
 userSchema.methods.generateJWT = function() {
-    return jwt.sign(                                                        // Payload for our JSON Web Token
-        {_id: this._id, email: this.email, name: this.fName},
-        process.env.JWT_SECRET,                                             // SECRET stored in .env file
-        { expiresIn: '1h' }                                                 // Token expires an hour from creation
+    // Sign the Payload for our JSON Web Token
+    return jwt.sign(
+        {_id: this._id,
+        email: this.email,
+        name: this.fName,
+        isRegistered: this.isRegistered,
+        isAdmin: this.isAdmin},
+        process.env.JWT_SECRET,         // SECRET stored in .env file
+        { expiresIn: '1h' }             // Token expires an hour from creation
     );
 };
 

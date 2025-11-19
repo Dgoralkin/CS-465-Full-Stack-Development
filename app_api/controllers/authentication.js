@@ -9,6 +9,8 @@
   Purpose:
     - This is the controller for authenticating and registering users.
     - It includes methods for user registration, login, and JWT authentication middleware.
+    - Supports authenticating and setting token for both guest and regular website users.
+    - 
 =========================================================================================== */
 
 // Import required modules
@@ -24,25 +26,26 @@ const User = require("../models/user");
 // Validates user input, creates user, hashes password, and returns JWT.
 const register = async (req, res) => {
 
-    // Validate all user fields exist else return error message
+    // Validate required user fields received from the form, else return error message
+    // Reads the passed body message for: first name, email, and password.
     if (!req.body.fName || !req.body.email || !req.body.password) {
         return res.status(400).json({ message: "All fields required" });
     }
 
+    // Create new user object from User model schema. Data fetched from request body.
     try {
-        // Create new user object from User model
         const user = new User({
-            fName: req.body.fName,                  // Fetch username from request body
-            lName: req.body.lName,                  // Fetch username from request body
-            email: req.body.email,                  // Fetch password from request body
-            isRegistered: req.body.isRegistered,
-            isAdmin: req.body.isAdmin
+            fName: req.body.fName,                  // first name
+            lName: req.body.lName,                  // last name
+            email: req.body.email,                  // email
+            isRegistered: req.body.isRegistered,    // guest or registered user
+            isAdmin: req.body.isAdmin               // admin or user role
         });
 
-        // Salt and hash the password using setPassword method from user model
+        // Salt and hash the password using setPassword method from User model
         user.setPassword(req.body.password);
 
-        // Save the user to the database
+        // Add user to the database.users collection.
         await user.save();
         // console.log("User: ", req.body.name, " added to database.");
 
@@ -114,20 +117,38 @@ const authenticateJWT = (req, res, next) => {
 
 // Creates a blank user account for guest users managed by unique user _id.
 // Create a signed session token for the guest user to be stored in localStorage.
-// Return the new guest user object and the signed token.
+// Return the new guest user object and the signed JWT + cookie
 const registerGuest = async (req, res) => {
     
     try {
         // Create new user object from User model
         const guestUser = new User();
+        // console.log("guestUser:", guestUser);
 
         // Save the guest user to the database
         await guestUser.save();
 
         // Generate a unique token for guest User.
         const token = guestUser.generateJWT();
+        
+        // Build session object for a cookie
+        const session = {
+            token,
+            user_id: guestUser._id,
+            isRegistered: false
+        };
 
-        return res.status(200).json({ guestUser: guestUser, token });
+        // Store session in secure HttpOnly cookie
+        res.cookie("sessionData", JSON.stringify(session), {
+            httpOnly: true,                  // Browser JS cannot read it
+            secure: true,                    // true if using HTTPS
+            sameSite: "Lax",
+            path: "/",
+            maxAge: 1000 * 60 * 60 * 24 * 1  // expires 1 days
+        });
+
+        // Return user and token to the frontend if needed
+         return res.status(200).json({ guestUser, token });
 
     } catch (err) {
         return res.status(500).json({ error: err.message });

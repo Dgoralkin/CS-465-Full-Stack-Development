@@ -36,10 +36,14 @@ const mongoose = require("mongoose");
 // Expected response format: [{all Travel objects}, {all Room objects}, {all Meals objects}]
 const allCartItemsList = async (req, res) => {
     try {
-        // Get a unique user Id from the pre-set cookie when user account created
-        if (!req.cookies.user_id) { return res.status(401).json({ message: "No user_id found" }); }
-        const user_id = req.cookies.user_id;
-        // console.log("user_id", user_id);
+        // Get a unique user Id from the pre-set cookie.
+        const cookie = req.cookies.sessionData;
+        if (!cookie) {
+            return res.status(401).json({ message: "No cookie exist" });
+        }
+        // Extract user_id from the cookie
+        const session = JSON.parse(cookie);
+        const user_id = session.user_id;
 
         // Query the DB with get all items from the cart aggregated by collection.
         const query = await DB_Cart.find({'user_id': user_id}).lean().exec();
@@ -126,10 +130,18 @@ const findOneCartItem = async (req, res) => {
 // Returns JSON object of a single item found from the cart collection in the database.
 // E.g., /cart where the parameters are passed through a x-www-form-urlencoded message.
 const addItemToCart = async (req, res) => {
-
     try {
+        // Get a unique user Id from the browser cookie.
+        const cookie = req.cookies.sessionData;
+        if (!cookie) {
+            return res.status(401).json({ message: "No cookie exist" });
+        }
+        // Extract user_id from the cookie
+        const session = JSON.parse(cookie);
+        const user_id = session.user_id;
+
         // Extract passed object parameters from the message body request.
-        const {user_id, collection, item_id, itemCode, itemName, itemRate, itemImage} = req.body;
+        const {collection, item_id, itemCode, itemName, itemRate, itemImage} = req.body;
         // console.log(user_id, collection, item_id, itemCode, itemName, itemRate, itemImage);
 
         // Check if the item already exists in the cart for the specific user.
@@ -153,6 +165,7 @@ const addItemToCart = async (req, res) => {
 
     // Save the new item to the cart collection in the DB
     const q = await newCartItem.save();
+    console.log("q", q);
 
     // Return the newly added trip name
     return res.status(201).json({ message: `Item ${itemName} added to your cart` });
@@ -171,14 +184,22 @@ const addItemToCart = async (req, res) => {
 // Returns the updated JSON object of a single item from the cart collection in the database.
 // E.g., /cart where the _id parameter and the new quantity value are passed through a x-www-form-urlencoded message.
 const updateItemQuantity = async (req, res) => {
-
     try {
+        // Get a unique user Id from the browser cookie.
+        const cookie = req.cookies.sessionData;
+        if (!cookie) {
+            return res.status(401).json({ message: "No cookie exist" });
+        }
+        // Extract user_id from the cookie
+        const session = JSON.parse(cookie);
+        const user_id = session.user_id;
+
         // Find the item by item _id and update its quantity field according to the request in req.body
         // Returns a JSON of the freshly updated record
         const updatedItem = await DB_Cart.findOneAndUpdate(
-            { user_id: req.body.user_id, _id: req.body._id }, 
-            { quantity: req.body.quantity },
-            { new: true, runValidators: true }  // Run validator to insure minimum quantity limit and return updated document.
+            { "user_id": user_id, "_id": req.body._id }, 
+            { "quantity": req.body.quantity },
+            { "new": true, "runValidators": true }  // Run validator to insure minimum quantity limit and return updated document.
         ).exec();
 
         // Validate that the cart item has been updated with the requested value.
@@ -206,9 +227,17 @@ const updateItemQuantity = async (req, res) => {
 // E.g., /cart where the user ID, and record _id parameter values are passed through a x-www-form-urlencoded message.
 const removeItemFromCart = async (req, res) => {
     try {
+        // Get a unique user Id from the browser cookie.
+        const cookie = req.cookies.sessionData;
+        if (!cookie) {
+            return res.status(401).json({ message: "No cookie exist" });
+        }
+        // Extract user_id from the cookie
+        const session = JSON.parse(cookie);
+        const user_id = session.user_id;
 
         // Read parameters from the URI and extract the collection name and item unique _id to query the database.
-        const { user_id, _id } = req.body;
+        const _id = req.body._id;
         // console.log("user_id, _id:", user_id, _id);
         
         // Find the item by item _id and delete it from the database according to the request in req.body

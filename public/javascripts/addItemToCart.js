@@ -13,7 +13,7 @@
       requests to the server, and provides feedback based on the server's response.
     - The code ensures a smooth user experience by disabling buttons during 
       processing and handling errors gracefully.
-    - The isGuestUser() method used to store cookies and user sessions for 
+    - The setGuestUser() method used to store cookies and user sessions for 
       unregistered users.
     - Uses localHost for data, sessions and (JWT) tokens storage.
 ===================================================================== */
@@ -21,10 +21,10 @@
 // Creates a new user account for guest user via the /api/guest endpoint
 // Retrieves a signed JWT and stores it and the guest user _id 
 // in the localStorage to start session.
-async function isGuestUser() {
+async function setGuestUser() {
 
     // Create a new user account for guest user via the /api/guest endpoint.
-    // Get session a JWT and store it in the localStorage to start session.
+    // Get session cookie named "sessionData" and JWT and store it in the localStorage to start session.
     try {
         const res = await fetch("/api/guest", {
             method: "POST",
@@ -32,16 +32,12 @@ async function isGuestUser() {
         });
 
         const response = await res.json();
-        // console.log("In isGuestUser, no token was found: user account created:", response);
+        // console.log("In setGuestUser, no token was found: user account created:", response);
 
-        // Save token and guest user _id in localStorage. (for unregistered users.)
+        // Save token, role and guest user _id in localStorage. (for unregistered users.)
         localStorage.setItem("token", response.token);
         localStorage.setItem("user_id", response.guestUser._id);
-
-        // Set cookie to pass parameters to the server side controllers.
-        const guestId = response.guestUser._id;
-        document.cookie = `user_id=${guestId}; path=/; SameSite=Lax`;
-        // console.log("cookie:", document.cookie);
+        localStorage.setItem("isRegistered", response.isRegistered);
 
         // Return guest user id
         return response.guestUser._id
@@ -65,14 +61,11 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
         // Check if user is registered via the session token
         // If no user account exist, register user as a guest and set a session token in the localStorage.
         if (!localStorage.token) {
-            const guestUser_id = await isGuestUser();
+            const guestUser_id = await setGuestUser();
             // console.log("User account created -> guestUser_id:", guestUser_id, "\nlocalStorage.token:", localStorage.token);
         } else {
             // console.log("User account exist -> user_id:", localStorage.user_id, "\nlocalStorage.token:", localStorage.token);
         }
-
-        // Get user id from the session data.
-        const user_id = localStorage.user_id
 
         // Extract the item ID, code, name, and the DB.collection from the form's data attributes
         const itemId = form.querySelector('input[name="_id"]').value;
@@ -98,7 +91,6 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
 
             // Include the collection and trip ID in the request body
             body: JSON.stringify({
-                user_id: user_id,
                 collection: collection, 
                 item_id: itemId, 
                 itemCode: itemCode, 
