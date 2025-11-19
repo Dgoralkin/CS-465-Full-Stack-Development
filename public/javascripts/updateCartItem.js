@@ -35,6 +35,10 @@ quantityButtons.forEach(button => {
     const itemID = btn.dataset.id;
     // console.log("btn, itemID:", btn, itemID);
 
+    // ======================================== //
+    //       *** Methods for PUT ***            //
+    // ======================================== //
+
     // Extract the text from the class which button was clicked.
     // Returns the item's quantity current value as a string and convert it to int.
     const clickedItem = document.querySelector(`.item-quantity[data-id="${itemID}"]`);
@@ -48,13 +52,11 @@ quantityButtons.forEach(button => {
         itemQuantity += 1;
       }
 
-      const user_id = localStorage.user_id;
-
       // Push the update to database through the defined API PUT request and a body message.
       const updateResponse = await fetch('/api/cart', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ user_id: user_id , _id: itemID, quantity: itemQuantity })
+        body: new URLSearchParams({ _id: itemID, quantity: itemQuantity })
       });
 
       // Also update item's quantity value in the HTML page if the database has been updated successfully.
@@ -65,13 +67,17 @@ quantityButtons.forEach(button => {
         loadCartSummary();
       }
 
+      // ======================================== //
+      //       *** Methods for DELETE ***         //
+      // ======================================== //
+
       // Remove item from the cart upon clicked delete button.
       if (btn.matches('.btn-quantity.remove')) { 
         // Submit the delete command to database through the defined API DELETE request and a body message.
         const deleteResponse = await fetch('/api/cart', {
           method: 'DELETE',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          body: new URLSearchParams({ user_id: user_id, _id: itemID })
+          body: new URLSearchParams({ _id: itemID })
         });
         // console.log("deleteResponse:", deleteResponse);
 

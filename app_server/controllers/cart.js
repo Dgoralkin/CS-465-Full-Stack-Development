@@ -13,23 +13,23 @@
     - Render the cart view with the fetched data or show an empty cart page if no data is found.
 =========================================================================================== */
 
-// Build an API URL from envirable variable (fallback to localhost) and the /api path.
+// Build an API URL from environment variable (fallback to localhost) and the /api path.
 const apiHost = process.env.API_HOST || "http://localhost:3000";
 const CartEndpoint = `${apiHost}/api/cart`;
 
 
 // Controller function to handle requests to the cart page
 const showCart = async function (req, res, next) {
-
-    // Read unique user Id parameter from the cookie
-    // and pass it to the art_api controller to read user specific cart only.
-    const user_id = req.cookies.user_id;
     
+    // Get the cookie from incoming request from the browser and attach it to the call.
+    const sessionCookie = req.cookies.sessionData;
+
     const options = {
         method: "GET",
         headers: {
             Accept: "application/json",
-            Cookie: `user_id=${user_id}`
+            // Pass the cookie along with the call so it can be read on the server
+            Cookie: `sessionData=${encodeURIComponent(sessionCookie)}`
         }
     }
 
