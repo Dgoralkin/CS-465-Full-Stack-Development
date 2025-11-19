@@ -15,7 +15,7 @@ import { User } from '../models/user';
 export class Register implements OnInit {
 
   public formError: string = '';
-  credentials = { name: '', email: '', password: '' };
+  credentials = { fName: '', email: '', password: '' };
 
   constructor(
     private router: Router,
@@ -27,14 +27,18 @@ export class Register implements OnInit {
   public onRegisterSubmit(): void {
     this.formError = '';
 
-    if (!this.credentials.name || !this.credentials.email || !this.credentials.password) {
+    if (!this.credentials.fName || !this.credentials.email || !this.credentials.password) {
       this.formError = 'All fields are required, please try again';
       return;
     }
 
     const newUser: User = {
-      name: this.credentials.name,
-      email: this.credentials.email
+      fName: this.credentials.fName,
+      lName: "Gorelkin",
+      email: this.credentials.email,
+      isRegistered: false,
+      isAdmin: false,
+      userSince: new Date()
     };
 
     // Call the service — no internal subscribe here if service already handles it

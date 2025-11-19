@@ -2,17 +2,20 @@
   File: travel.js
   Description: Client-side JavaScript for managing the travel cart.
   Author: Daniel Gorelkin
-  Version: 1.0
+  Version: 1.1
   Created: 2025-11-13
-  Updated: NA
+  Updated: 2025-11-18
 
   Purpose:
     - This file contains JavaScript code that runs in the browser to handle 
-        adding selected items to the shopping cart.
+      adding selected items to the shopping cart.
     - It listens for form submissions on "Add to Cart" buttons, sends POST 
-        requests to the server, and provides user feedback based on the server's response.
+      requests to the server, and provides feedback based on the server's response.
     - The code ensures a smooth user experience by disabling buttons during 
-        processing and handling errors gracefully.
+      processing and handling errors gracefully.
+    - The isGuestUser() method used to store cookies and user sessions for 
+      unregistered users.
+    - Uses localHost for data, sessions and (JWT) tokens storage.
 ===================================================================== */
 
 // Creates a new user account for guest user via the /api/guest endpoint
@@ -31,14 +34,14 @@ async function isGuestUser() {
         const response = await res.json();
         // console.log("In isGuestUser, no token was found: user account created:", response);
 
-        // Save token and guest user _id in localStorage.
+        // Save token and guest user _id in localStorage. (for unregistered users.)
         localStorage.setItem("token", response.token);
         localStorage.setItem("user_id", response.guestUser._id);
 
         // Set cookie to pass parameters to the server side controllers.
         const guestId = response.guestUser._id;
         document.cookie = `user_id=${guestId}; path=/; SameSite=Lax`;
-        console.log("cookie:", document.cookie);
+        // console.log("cookie:", document.cookie);
 
         // Return guest user id
         return response.guestUser._id
@@ -63,9 +66,9 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
         // If no user account exist, register user as a guest and set a session token in the localStorage.
         if (!localStorage.token) {
             const guestUser_id = await isGuestUser();
-            console.log("User account created -> guestUser_id:", guestUser_id, "\nlocalStorage.token:", localStorage.token);
+            // console.log("User account created -> guestUser_id:", guestUser_id, "\nlocalStorage.token:", localStorage.token);
         } else {
-            console.log("User account exist -> user_id:", localStorage.user_id, "\nlocalStorage.token:", localStorage.token);
+            // console.log("User account exist -> user_id:", localStorage.user_id, "\nlocalStorage.token:", localStorage.token);
         }
 
         // Get user id from the session data.
@@ -78,7 +81,6 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
         const itemRate = form.querySelector('input[name="itemRate"]').value;
         const itemImage = form.querySelector('input[name="itemImage"]').value;
         const collection = form.querySelector('input[name="collection"]').value;
-        
         // console.log('Adding to cart... ',itemCode, itemName, collection, itemId);
 
         // Select the button within the form to provide feedback
@@ -106,12 +108,12 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
                 })
             });
 
-            // Read response from the controller and display a confirmation message
+            // Read response from the controller and display a confirmation message in a pop out window.
             const result = await response.json();
             window.alert(result.message || 'Added to cart!');
 
         } catch (err) {
-            // Display error message.
+            // Display error message in a pop out window.
             console.error('Error adding to cart:', err);
             window.alert('Can\'t add this item to your cart.');
 

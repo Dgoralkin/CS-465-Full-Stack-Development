@@ -12,8 +12,9 @@
 =========================================================================================== */
 
 // Import required modules
+// Methods to set JWT, register and validate user password
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");     // Methods to set JWT, register and validate user password
+const User = require("../models/user");
 
 // ======================================== //
 //       *** Authentication Methods ***     //
@@ -24,15 +25,19 @@ const User = require("../models/user");     // Methods to set JWT, register and 
 const register = async (req, res) => {
 
     // Validate all user fields exist else return error message
-    if (!req.body.name || !req.body.email || !req.body.password) {
+    if (!req.body.fName || !req.body.email || !req.body.password) {
         return res.status(400).json({ message: "All fields required" });
     }
 
     try {
         // Create new user object from User model
         const user = new User({
-            name: req.body.name,        // Fetch username from request body
-            email: req.body.email,      // Fetch password from request body
+            fName: "req.body.fName",        // Fetch username from request body
+            lName: "req.body.lName",        // Fetch username from request body
+            email: "req.body.email",      // Fetch password from request body
+            isRegistered: req.body.isRegistered,
+            isAdmin: req.body.isAdmin,
+            userSince: req.body.userSince
         });
 
         // Salt and hash the password using setPassword method from user model

@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
     email: { type: String, unique: true, default: Date.now },           // Use email as unique identifier uses date as a unique placeholder.
     isRegistered: { type: Boolean, default: false },                    // An unregistered and not an Admin user is a Guest user.
     isAdmin: { type: Boolean, default: false },
-    userSince: {type: Date, default: null}
+    userSince: { type: Date, default: Date.now }
 });
 
 // Method to set the password for this record.

@@ -64,8 +64,8 @@ export class Authentication {
     has checked to make sure that the user isLoggedIn. */
   public getCurrentUser(): User {
     const token: string = this.getToken();
-    const { email, name } = JSON.parse(atob(token.split('.')[1]));
-    return { email, name } as User;
+    const { email, fName } = JSON.parse(atob(token.split('.')[1]));
+    return { email, fName } as User;
   }
 
   /*  Login method that leverages the login method in tripDataService 

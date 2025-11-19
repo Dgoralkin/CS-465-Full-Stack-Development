@@ -47,10 +47,21 @@ export class TripData {
   handleAuthAPICall(endpoint: string, user: User, passwd: string) : Observable<AuthResponse> {
     console.log('Inside TripDataService::handleAuthAPICall');
     let formData = {
-      name: user.name,
+      name: user.fName,
       email: user.email,
       password: passwd
     };
+    /*
+    let formData = {
+      fName: user.fName,
+      lName: user.lName,
+      email: user.email,
+      password: passwd,
+      isRegistered: user.isRegistered,
+      isAdmin: user.isAdmin,
+      userSince: user.userSince
+    };
+    */
     return this.http.post<AuthResponse>(this.baseUrl + '/' + endpoint, formData);
   }
 
