@@ -27,8 +27,9 @@ const cartSchema = new mongoose.Schema({
     name: {type: String, required: true, index: true},                      // Use name as index
     dbCollection: { type: String, required: true, index: true },            // Use dbCollection as index
     rate: { type: Number, required: true},
-    image:  { type: String, required: true},
-    quantity:  { type: Number, required: true, default: 1, min: 1}          // Define minimum on the field
+    image: { type: String, required: true},
+    quantity: { type: Number, required: true, default: 1, min: 1},          // Define minimum on the field
+    addToCartDate: {type: Date, default: Date}
 });
 
 // Compound index on length + start + perPerson

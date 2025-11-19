@@ -121,6 +121,40 @@ const findOneCartItem = async (req, res) => {
     }
 };
 
+// This method triggers with every app load by the DOMContentLoaded listener in index.hbs
+// It searches the cart for unpaid abandoned items and removes them if there in the cart for 24H>.
+// Returns a JSON response
+const clearExpiredSession = async (req, res) => {
+  try {
+
+    // Define cut off of 24H from now.
+    const now = new Date();
+    const cutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000); // Now - 24H
+
+    // Find all abandoned items in the cart which are older than 24H.
+    const expiredItems = await DB_Cart.find({
+    addToCartDate: { $lte: cutoff }
+    });
+
+    if (!Array.isArray(expiredItems) || expiredItems.length === 0) {
+      return res.status(200).json({ message: "No expired items found" });
+    }
+
+    // An array of items by _id to delete crom the cart
+    const idsToDelete = expiredItems.map(item => item._id);
+    // console.log("expiredItems:", idsToDelete);
+
+    // Delete all expired items from cart by _id all at once.
+    const deletedItems = await DB_Cart.deleteMany({ _id: { $in: idsToDelete } });
+
+    // Return status.
+    return res.status(200).json({ message: "Expired items items deleted", data: deletedItems });
+  } catch (err) {
+    console.error("Error retrieving expired items:", err);
+    return res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
 // ======================================== //
 //          *** Methods for POST ***        //
 // ======================================== //
@@ -165,7 +199,7 @@ const addItemToCart = async (req, res) => {
 
     // Save the new item to the cart collection in the DB
     const q = await newCartItem.save();
-    console.log("q", q);
+    // console.log("q", q);
 
     // Return the newly added trip name
     return res.status(201).json({ message: `Item ${itemName} added to your cart` });
@@ -268,5 +302,6 @@ module.exports = {
     findOneCartItem,            // GET method
     addItemToCart,              // POST method
     updateItemQuantity,         // PUT method
-    removeItemFromCart          // DELETE method
+    removeItemFromCart,         // DELETE method
+    clearExpiredSession         // DELETE MANY method
 };
