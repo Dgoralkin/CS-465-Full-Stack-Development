@@ -41,6 +41,7 @@ const newsRouter = require('./app_server/routes/news');           // Update the 
 const aboutRouter = require('./app_server/routes/about');         // Update the path for the about page
 const contactRouter  = require('./app_server/routes/contact');    // Update the path for the contact us page
 const cartRouter  = require('./app_server/routes/cart');          // Update the path for the shopping cart page
+const userLoginRouter  = require('./app_server/routes/registerAndLogin'); // path for the login and register page
 
 // Setup rest api routes for page navigation
 const indexApiRouter = require('./app_api/routes/index_api');         // Path to the index api
@@ -124,6 +125,7 @@ app.use('/', newsRouter);                   // Go to the news page.
 app.use('/', aboutRouter);                  // Go to the about page.
 app.use('/', contactRouter);                // Go to the contact us page.
 app.use('/', cartRouter);                   // Go to cart page.
+app.use('/', userLoginRouter);              // Go to user login page.
 
 // Wire-up api routes to controllers
 app.use('/api', indexApiRouter);            // Trigger the api for the index homepage from app_api/routes/index_api

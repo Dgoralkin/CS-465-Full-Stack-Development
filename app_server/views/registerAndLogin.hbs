@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  {{> head }}
+  <body>
+
+    <div id="background">
+
+      {{> header }}
+
+      <div id="contents" class="container my-5">
+        <div class="row g-4 register-login-wrapper">
+
+          <!-- =================== LEFT COLUMN: LOGIN FORM =================== -->
+          <div class="col-md-6">
+            <form id="loginForm" class="box login-box">
+              <div class="body">
+
+                <h1 class="page-title">Log in</h1>
+                <h2 class="page-subtitle">Returning visitors</h2>
+
+                <label for="loginEmail">Email address</label>
+                <input id="loginEmail" name="email" type="email" class="form-control login-input" required="true" placeholder="Enter your email">
+
+                <label for="loginPassword">Password</label>
+                <input id="loginPassword" name="password" type="password" class="form-control login-input" required="true" placeholder="Enter your password">
+
+                <div class="checkbox-row mt-2 mb-4">
+                  <input type="checkbox" id="showPassword" name="showPassword">
+                  <label for="showPassword">Show Password</label>
+                </div>
+
+                <button type="submit" id="loginBtn" class="btn login-submit-btn w-100">Log in</button>
+
+                <a href="#" class="forgot-link mt-3 d-block text-center">Forgot your password?</a>
+
+              </div>
+            </form>
+          </div>
+
+          <!-- =================== RIGHT COLUMN: REGISTER FORM =================== -->
+          <div class="col-md-6">
+            <form id="registerForm" class="box register-box">
+              <div class="body">
+
+                <h1 class="page-title">Create an account</h1>
+                <h2 class="page-subtitle">New visitors</h2>
+
+                <label for="firstName">First name</label>
+                <input id="firstName" name="firstName" type="text" class="form-control login-input" required="true" placeholder="Enter your first name">
+
+                <label for="lastName">Last name</label>
+                <input id="lastName" name="lastName" type="text" class="form-control login-input" required="true" placeholder="Enter your last name">
+
+                <label for="regEmail">Email address</label>
+                <input id="regEmail" name="email" type="email" class="form-control login-input" required="true" placeholder="Enter your email">
+
+                <!-- Enforce a strong password (e.g., Abcd123!) -->
+                <label for="regPass">Password</label>
+                <input
+                  id="regPass" 
+                  name="password" 
+                  type="password" 
+                  class="form-control login-input" 
+                  required="true"
+                  placeholder="Create a password"
+                  pattern="(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}"
+                  title="Password must be at least 8 characters and include uppercase, lowercase, number, and special character."
+                >
+                <label for="regConfirm">Confirm password</label>
+                <input id="regConfirm" name="confirmPassword" type="password" class="form-control login-input" required="true" placeholder="Confirm your password">
+
+                <p class="signup-text mt-3">
+                  <b>
+                    Sign up for email updates, and we'll deliver special offers, exclusive product news, 
+                    and event info straight to your inbox.
+                  </b>
+                </p>
+
+                <button type="submit" id="registerBtn" class="btn register-submit-btn w-100 mt-3">Create account</button>
+
+              </div>
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+      {{> footer }}
+
+    </div>
+
+    <script src="/javascripts/registerAndLogin.js"></script>
+  </body>
+</html>
