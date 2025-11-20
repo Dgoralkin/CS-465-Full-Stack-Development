@@ -41,20 +41,48 @@ const register = async (req, res) => {
             isRegistered: req.body.isRegistered,    // guest or registered user
             isAdmin: req.body.isAdmin               // admin or user role
         });
+        // console.log("inside register, user:", user);
 
         // Salt and hash the password using setPassword method from User model
         user.setPassword(req.body.password);
 
-        // Add user to the database.users collection.
-        await user.save();
-        // console.log("User: ", req.body.name, " added to database.");
+        // Try to add user to the database.users collection while checking if a user 
+        // with the same email already exist. Return a 409 error and a confirmation message
+        // to acknowledge user.
+        try {
+            await user.save();
+        } catch (err) {
+            // Duplicate email handling case. User with the existing email already exist.
+            if (err.code === 11000) {
+                return res.status(409).json({
+                    message: "A user with this email already exists."
+                });
+            }
+        }
+        
+        // =================================================================================
+        // in generateJWT: Todo: update cookie, set new token
+        // In DB: 
+        // 1. update all cart items with the new user_id
+        // 2. delete old user_id
+        const user_id = req.body.user_id;
+        if (user_id) {
+            console.log("inside register, user_id:", user_id, "\nTODO: 1. update all cart items with the new user_id");
+        }
+        // =================================================================================
 
         // Generate and return unique token for the user.
         const token = user.generateJWT();
-        return res.status(200).json({ token });
+
+        // Return and proceed to login or to the second verification step.
+        return res.status(200).json({ token, message: `Welcome ${user.fName} ${user.lName}!
+            \n You will be redirected to set up a Two Step Verification login!` });
 
     } catch (err) {
-        return res.status(500).json({ error: err.message });
+        console.error("Register error:", err);
+        return res.status(500).json({
+            message: "Failed to register user."
+        });
     }
 };
 

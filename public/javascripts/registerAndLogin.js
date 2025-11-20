@@ -1,6 +1,6 @@
 /* ====================================================================
   File: registerAndLogin.hbs
-  Description: This is the user side combined registration and login page.
+  Description: This is the combined, user side registration and login page logic.
   Author: Daniel Gorelkin
   Version: 1.1
   Created: 2025-08-15
@@ -21,6 +21,7 @@
 function formIsValid(formElement) {
   const inputs = formElement.querySelectorAll("input");
 
+  // Loop through all the input fields.
   for (const input of inputs) {
     if (input.value.trim() === "") {
       return {
@@ -51,6 +52,30 @@ function showPassword() {
   regPass
 }
 
+// Make a call to /api/register and register new user via the authenticator 
+async function registerNewUser(registerForm) {
+  try {
+    const response = await fetch('/api/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // Include user details in the body as a JSON object.
+      body: JSON.stringify(registerForm)
+    });
+
+    // Read response from the controller and display a confirmation message in a pop out window.
+    // If server returned an error (status 409), means that a user with same email already exists in DB.
+    // Display alert message to acknowledge user and return to execution.
+    const result = await response.json();
+    window.alert(result.message || 'Welcome!');
+
+    return response;
+  } 
+  catch (err) {
+    // Return a fake error-like response to avoid undefined
+    console.error("Network or server error:", err);
+    return { ok: false, status: 0, json: async () => ({ message: "Network error. Try again later." }) };
+  }
+}
 
 // =========================================================
 // LOGIN FORM HANDLER:
@@ -67,7 +92,7 @@ function handleLogin(event) {
   const emptyCheck = formIsValid(form);
   if (!emptyCheck.valid) {
     displayError(emptyCheck.message);
-    return;
+    return response;
   }
 
   // Fetch and trim all input values in a JSON object
@@ -86,7 +111,7 @@ function handleLogin(event) {
 // =========================
 
 // Prevent default form submission and validate form input.
-function handleRegister(event) {
+async function handleRegister(event) {
 
   event.preventDefault();
   const form = document.getElementById("registerForm");
@@ -112,15 +137,25 @@ function handleRegister(event) {
 
   // Fetch and trim all input values in a JSON object
   const registerForm = {
-    user_id: user_id,
+    user_id: user_id,                       // user registered as a guest
     fName: document.getElementById("firstName").value.trim(),
     lName: document.getElementById("lastName").value.trim(),
     email: document.getElementById("regEmail").value.trim(),
-    password: document.getElementById("regPass").value.trim()
+    password: document.getElementById("regPass").value.trim(),
+    isRegistered: false,                    // new unregistered user
+    isAdmin: false                          // user role
   };
   console.log("Register form:", registerForm);
 
-  // TODO: Send register request fetch(`/api/register`, {...})
+  // Send register request /api/register carrying a body message to create a new user account.
+  const response = await registerNewUser(registerForm);
+  if (!response.ok) {
+    return response;
+  }
+
+  // Account created successfully. Activate Online one-time password generator.
+  console.log("IMPLEMENT: Online one-time password generator / TOTP");
+
 }
 
 
