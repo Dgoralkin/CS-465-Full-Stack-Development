@@ -24,20 +24,16 @@
 async function setGuestUser() {
 
     // Create a new user account for guest user via the /api/guest endpoint.
-    // Get session cookie named "sessionData" and JWT and store it in the localStorage to start session.
+    // Get session cookie named "sessionData" and fetch the temporary guest_id
     try {
         const res = await fetch("/api/guest", {
             method: "POST",
+            credentials: "include",
             headers: { "Content-type": "application/json" }
         });
 
         const response = await res.json();
-        // console.log("In setGuestUser, no token was found: user account created:", response);
-
-        // Save token, role and guest user _id in localStorage. (for unregistered users.)
-        localStorage.setItem("token", response.token);
-        localStorage.setItem("user_id", response.guestUser._id);
-        localStorage.setItem("isRegistered", response.isRegistered);
+        // console.log("In setGuestUser, no cookie was found: user account created:", response);
 
         // Return guest user id
         return response.guestUser._id
@@ -58,13 +54,16 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
         // Prevent the default form submission behavior to handle it via JavaScript and stay on the page
         e.preventDefault();
 
-        // Check if user is registered via the session token
-        // If no user account exist, register user as a guest and set a session token in the localStorage.
-        if (!localStorage.token) {
+        // Check if user is registered via visiting api endpoint and quoting session cookie.
+        // If no user account exist, register user as a guest and set a session cookie.
+        const res = await fetch("/api/checkSession");
+        const data = await res.json();
+
+        if (!data.hasSession) {
             const guestUser_id = await setGuestUser();
-            // console.log("User account created -> guestUser_id:", guestUser_id, "\nlocalStorage.token:", localStorage.token);
+            // console.log("User account created -> guestUser_id:", guestUser_id);         // New guest user id
         } else {
-            // console.log("User account exist -> user_id:", localStorage.user_id, "\nlocalStorage.token:", localStorage.token);
+            // console.log("User account exist -> user_id:", data.session.user_id);        // Existing user id
         }
 
         // Extract the item ID, code, name, and the DB.collection from the form's data attributes

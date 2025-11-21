@@ -17,6 +17,9 @@
 // Methods to set JWT, register and validate user password
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+// Import the Mongoose models for Cart, Travel, Rooms, and Meals collection
+const DB_Cart = require('../models/cartSchema');
+const DB_User = require('../models/user');
 
 // ======================================== //
 //       *** Authentication Methods ***     //
@@ -52,7 +55,7 @@ const register = async (req, res) => {
         try {
             await user.save();
         } catch (err) {
-            // Duplicate email handling case. User with the existing email already exist.
+            // Duplicate email handling case. A user with the existing email already exist in the database.
             if (err.code === 11000) {
                 return res.status(409).json({
                     message: "A user with this email already exists."
@@ -64,15 +67,58 @@ const register = async (req, res) => {
         // in generateJWT: Todo: update cookie, set new token
         // In DB: 
         // 1. update all cart items with the new user_id
-        // 2. delete old user_id
-        const user_id = req.body.user_id;
-        if (user_id) {
-            console.log("inside register, user_id:", user_id, "\nTODO: 1. update all cart items with the new user_id");
+        // 2. Set new token and update session
+        // 3. Set new cookie
+        const guestUser_id = req.body.user_id;
+        const newUser_id = user._id;
+        const isRegistered = req.body.isRegistered;
+        console.log("isRegistered", isRegistered);
+        if (guestUser_id && !isRegistered) {
+            console.log("inside register, guestUser_id:", guestUser_id, "\nTODO: 1. update all cart items with the new user_id");
+
+            try {
+                // Update all guest records in the cart by updating then with the registered user id.
+                const updatedCartItems = await DB_Cart.updateMany(
+                    { user_id: guestUser_id },        // find guest's cart items
+                    { $set: { user_id: newUser_id }}  // assign to new user
+                );
+                console.log("updatedCartItems: ", updatedCartItems);
+
+            } catch (err) {
+                console.error("Update cart owner error:", err);
+                return res.status(500).json({ message: "Failed to update cart owner." });
+            }
         }
         // =================================================================================
 
+
         // Generate and return unique token for the user.
         const token = user.generateJWT();
+        // console.log("token: ", token);
+
+        // Update cookie -> build session object for a cookie. Mark user as Register, and not Authenticated.
+        const session = {
+            token,
+            user_id: newUser_id,
+            isRegistered: true,
+            isAuthenticated: false
+        };
+
+        // Store session in secure HttpOnly cookie
+        res.cookie("sessionData", JSON.stringify(session), {
+            httpOnly: true,                  // Browser JS cannot read it
+            secure: true,                    // true if using HTTPS
+            sameSite: "Lax",
+            path: "/",
+            maxAge: 1000 * 60 * 60 * 24 * 1  // expires 1 days
+        });
+
+        // Remove guest user from database
+        if (guestUser_id && !isRegistered) {
+            // Delete guestUser_id from database as all his cart items were migrated to newUser_id.
+            const removeGuestUser = await DB_User.findOneAndDelete({ _id: guestUser_id }).exec();
+            // console.log("removeGuestUser:", removeGuestUser);
+        }
 
         // Return and proceed to login or to the second verification step.
         return res.status(200).json({ token, message: `Welcome ${user.fName} ${user.lName}!
@@ -92,16 +138,16 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     // Check that all fields are in place, else return error message
     if (!req.body.email || !req.body.password) {
-        return res.status(400).json({ message: "All fields required" });    // Return error
+        return res.status(400).json({ message: "All fields required" });
     }
 
     try {
         // Query the database for the user by email to validate credentials
         const user = await User.findOne({ email: req.body.email });
 
-        // Check credentials and validate password (returns True if Hash metches)
+        // Check credentials and validate password (returns True if Hash matches)
         if (!user || !user.validPassword(req.body.password)) {
-            // No Hash metched - invalid credentials
+            // No Hash matched -> invalid credentials, return to login page.
             return res.status(401).json({ message: "Invalid credentials" });
         }
 
@@ -163,7 +209,8 @@ const registerGuest = async (req, res) => {
         const session = {
             token,
             user_id: guestUser._id,
-            isRegistered: false
+            isRegistered: false,
+            isAuthenticated: false
         };
 
         // Store session in secure HttpOnly cookie
@@ -176,10 +223,48 @@ const registerGuest = async (req, res) => {
         });
 
         // Return user and token to the frontend if needed
-         return res.status(200).json({ guestUser, token });
+         return res.status(200).json({ guestUser });
 
     } catch (err) {
         return res.status(500).json({ error: err.message });
+    }
+};
+
+// Defines the endpoint 'api/checkSession' for client checking if a session exist.
+// Returns JSON with session details or response error.
+const checkSession = async (req, res) => {
+    try {
+        // Read cookie data.
+        const cookie = req.cookies.sessionData;
+
+        // No cookie found, return session false.
+        if (!cookie) {
+            return res.status(200).json({
+                hasSession: false,
+                session: null
+            });
+        }
+
+        // Parse cookie
+        let session = JSON.parse(cookie);
+
+        // Return a safe subset (without the token)
+        return res.status(200).json({
+            hasSession: true,
+            session: {
+                user_id: session.user_id,
+                isRegistered: session.isRegistered,
+                isAuthenticated: session.isAuthenticated
+            }
+        });
+
+    } catch (err) {
+        console.error("Error retrieving session:", err);
+        return res.status(500).json({ 
+            hasSession: false,
+            message: "Error retrieving session",
+            error: err 
+        });
     }
 };
 
@@ -188,5 +273,6 @@ module.exports = {
     register,
     login,
     authenticateJWT,
-    registerGuest
+    registerGuest,
+    checkSession
 };

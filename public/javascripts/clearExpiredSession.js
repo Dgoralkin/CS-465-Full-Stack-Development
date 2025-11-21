@@ -19,7 +19,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     // console.log("Raw response:", expiredSessionResponse);
 
     const result = await expiredSessionResponse.json();
-    console.log("Cart status:", result);
+    // console.log("Cart status:", result);
   } catch (err) {
     console.error("Error clearing cart:", err);
   }

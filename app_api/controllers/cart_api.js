@@ -129,18 +129,18 @@ const clearExpiredSession = async (req, res) => {
 
     // Define cut off of 24H from now.
     const now = new Date();
-    const cutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000); // Now - 24H
+    const cutoff = new Date(now.getTime() - (24 * 60 * 60 * 1000)); // Now - 24H
 
     // Find all abandoned items in the cart which are older than 24H.
     const expiredItems = await DB_Cart.find({
-    addToCartDate: { $lte: cutoff }
-    });
+      addToCartDate: { $lt: cutoff }
+    }).lean();
 
     if (!Array.isArray(expiredItems) || expiredItems.length === 0) {
       return res.status(200).json({ message: "No expired items found" });
     }
 
-    // An array of items by _id to delete crom the cart
+    // An array of items by _id to delete from the cart
     const idsToDelete = expiredItems.map(item => item._id);
     // console.log("expiredItems:", idsToDelete);
 
