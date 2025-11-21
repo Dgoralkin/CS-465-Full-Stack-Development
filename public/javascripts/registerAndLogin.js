@@ -64,10 +64,9 @@ async function registerNewUser(registerForm) {
 
     // Read response from the controller and display a confirmation message in a pop out window.
     // If server returned an error (status 409), means that a user with same email already exists in DB.
-    // Display alert message to acknowledge user and return to execution.
+    // Display alert message to acknowledge user and return to login page.
     const result = await response.json();
     window.alert(result.message || 'Welcome!');
-
     return response;
   } 
   catch (err) {
@@ -132,8 +131,11 @@ async function handleRegister(event) {
     return;
   }
 
-  // Get unique user ID from the local storage if a token exist.
-  const user_id = localStorage.getItem("user_id");
+  // Get unique user ID by checking if session exist and querying cookie.
+  const res = await fetch("/api/checkSession");
+  const data = await res.json();
+  const user_id = data.session.user_id;
+  const isRegistered = data.session.isRegistered;
 
   // Fetch and trim all input values in a JSON object
   const registerForm = {
@@ -142,16 +144,16 @@ async function handleRegister(event) {
     lName: document.getElementById("lastName").value.trim(),
     email: document.getElementById("regEmail").value.trim(),
     password: document.getElementById("regPass").value.trim(),
-    isRegistered: false,                    // new unregistered user
+    isRegistered: isRegistered,                    // new unregistered user
     isAdmin: false                          // user role
   };
-  console.log("Register form:", registerForm);
+  // console.log("Register form:", registerForm);
 
   // Send register request /api/register carrying a body message to create a new user account.
   const response = await registerNewUser(registerForm);
-  if (!response.ok) {
-    return response;
-  }
+
+  // Return back to the login page if couldn't add new user and create new registered account.
+  if (!response.ok) { return response; }
 
   // Account created successfully. Activate Online one-time password generator.
   console.log("IMPLEMENT: Online one-time password generator / TOTP");
