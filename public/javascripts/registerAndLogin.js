@@ -35,10 +35,10 @@ function formIsValid(formElement) {
   return { valid: true };
 }
 
-// Display an error — replace this later with your UI preferred method
+// Display an error message in an alert view.
 function displayError(msg) {
   console.error(msg);
-  alert(msg); // temporary until you add UI elements
+  alert(msg);
 }
 
 // Show or hide password in the forms
@@ -83,20 +83,48 @@ async function loginUser(loginForm) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       // Include user details in the body as a JSON object.
-      body: JSON.stringify(loginForm)
+      body: JSON.stringify(loginForm),
+      credentials: "include"
     });
 
     // Read response from the controller and display a confirmation message in a pop out window.
     // If server returned an error (status 409), means that a user with same email already exists in DB.
     // Display alert message to acknowledge user and return to login page.
     const result = await response.json();
+    
     window.alert(result.message || 'Welcome!');
+
+    // Trigger a reload so header updates based on session cookie and trigger the login/logout button change.
+    window.location.reload();
     return response;
+
   } 
   catch (err) {
     // Return a fake error-like response to avoid undefined
     console.error("Network or server error:", err);
     return { ok: false, status: 0, json: async () => ({ message: "Network error. Try again later." }) };
+  }
+}
+
+// Remove token cookie by contacting backend logout endpoint to sign user out.
+async function logoutUser() {
+  try {
+    // Contact backend via POST
+    const response = await fetch('/api/logout', {
+      method: 'POST',
+      credentials: "include"
+    });
+
+    const loggedOut = await response.json();
+    console.log("response / loggedOut: ",response, loggedOut);
+
+    // Reload to trigger header refresh
+    if (response.ok) {
+      window.location.reload();
+    }
+
+  } catch (err) {
+    console.log("Error signing user out", err);
   }
 }
 
@@ -123,7 +151,7 @@ async function handleLogin(event) {
     email: document.getElementById("loginEmail").value.trim(),
     password: document.getElementById("loginPassword").value.trim(),
   };
-  console.log("Login form:", { loginForm });
+  // console.log("Login form:", { loginForm });
 
   // Send login request /api/login carrying a body message to sign in existing user..
   const response = await loginUser(loginForm);
@@ -188,14 +216,24 @@ async function handleRegister(event) {
 
   // Account created successfully. Activate Online one-time password generator.
   console.log("IMPLEMENT: Online one-time password generator / TOTP");
-
 }
 
 
-// =========================
-// Attach event listeners to fetch form data.
-// =========================
+// ===================================
+// Event listeners to fetch form data.
+// ===================================
 
 document.getElementById("loginForm").addEventListener("submit", handleLogin);             // Submit login form
 document.getElementById("registerForm").addEventListener("submit", handleRegister);       // Submit register form
 document.getElementById("showPassword").addEventListener("change", showPassword);         // Hide/unhide password
+
+// 
+document.addEventListener('DOMContentLoaded', () => {
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      logoutUser();
+    });
+  }
+});

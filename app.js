@@ -61,6 +61,9 @@ handlebars.registerHelper('eq', function(a, b) {
   return a === b;
 });
 
+// Register middleware globally for login/logout functionality
+const authStatus = require('./middleware/authStatus');
+
 const app = express();
 
 // view engine setup
@@ -77,6 +80,7 @@ app.use(express.json());
 // Parse application/x-www-form-urlencoded
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(authStatus);
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Enable CORS (Cross Origin Resource Sharing) for resource sharing to hook Angular SPA

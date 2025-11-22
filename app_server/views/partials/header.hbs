@@ -18,7 +18,7 @@
         </a>
     </div>
 
-    <!-- Upate the class with the "selected" style to highlight the existing page -->
+    <!-- Update class with the "selected" style to highlight the existing page -->
     <div id="navigation">
         <ul>
             <li class="{{#if (eq currentPage '/')}}selected{{/if}}">
@@ -43,7 +43,15 @@
                 <a href="/contact">Contact</a>
             </li>
             <li class="user-link" id="navbar_login_btn">
-                <a href="/login">Login</a>
+                {{#if isLoggedIn}}
+                    {{#if isGuest}}
+                        <a href="#" onclick="logoutUser()" id="logoutBtn" style="color: #f4a261;">Logout</a>
+                    {{else}}
+                        <a href="/login">Login</a>
+                    {{/if}}
+                {{else}}
+                    <a href="/login">Login</a>
+                {{/if}}
             </li>
 
             <!-- Shopping cart -->

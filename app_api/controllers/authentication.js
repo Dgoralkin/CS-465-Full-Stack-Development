@@ -10,14 +10,16 @@
     - This is the controller for authenticating and registering users.
     - It includes methods for user registration, login, and JWT authentication middleware.
     - Supports authenticating and setting token for both guest and regular website users.
-    - 
+    - Contain method for setting up a session for guest user and updating session from guest
+      to registered user session to maintain cart items and records.
+    - Contain method to check retrieve cookies data and check session details.
 =========================================================================================== */
 
 // Import required modules
 // Methods to set JWT, register and validate user password
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
-// Import the Mongoose models for Cart, Travel, Rooms, and Meals collection
+// Import the Mongoose models for the Cart and User collections in the database.
 const DB_Cart = require('../models/cartSchema');
 const DB_User = require('../models/user');
 
@@ -26,7 +28,10 @@ const DB_User = require('../models/user');
 // ======================================== //
 
 // Register new user controller
-// Validates user input, creates user, hashes password, and returns JWT.
+// Validates user input, creates a registered user account, hashes password, sets cookie and session. 
+// Returns token and a welcome message to be shown in an alert window with user name and last name.
+// Handles swapping a session from a "guest" to "registered" user status in the session.
+// Updates the set cookie, and transfer all cart belongings from a "guest" to "registered" user status.
 const register = async (req, res) => {
 
     // Validate required user fields received from the form, else return error message
@@ -46,7 +51,7 @@ const register = async (req, res) => {
         });
         // console.log("inside register, user:", user);
 
-        // Salt and hash the password using setPassword method from User model
+        // Salt and hash the password using setPassword method from User model and update user object.
         user.setPassword(req.body.password);
 
         // Try to add user to the database.users collection while checking if a user 
@@ -63,64 +68,60 @@ const register = async (req, res) => {
             }
         }
         
-        // =================================================================================
-        // in generateJWT: Todo: update cookie, set new token
-        // In DB: 
-        // 1. update all cart items with the new user_id
-        // 2. Set new token and update session
-        // 3. Set new cookie
+        // Collect user details from a message body to update the just created user.
         const guestUser_id = req.body.user_id;
         const newUser_id = user._id;
         const isRegistered = req.body.isRegistered;
-        // console.log("isRegistered", isRegistered);
-        if (guestUser_id && !isRegistered) {
-            console.log("inside register, guestUser_id:", guestUser_id, "\nTODO: 1. update all cart items with the new user_id");
+        // console.log("guestUser_id, isRegistered:", guestUser_id, isRegistered);
 
+        // Handle a guest to -> registered user scenario session upgrade.
+        // If a call comes while carrying guest user id, and the user is not registered yet to the website.
+        if (guestUser_id && !isRegistered) {
             try {
-                // Update all guest records in the cart by updating then with the registered user id.
+                // Update all guest records/items in the cart by updating them with the freshly registered user id.
                 const updatedCartItems = await DB_Cart.updateMany(
                     { user_id: guestUser_id },        // find guest's cart items
                     { $set: { user_id: newUser_id }}  // assign to new user
                 );
-                console.log("updatedCartItems: ", updatedCartItems);
+                // console.log("updatedCartItems: ", updatedCartItems);
 
             } catch (err) {
                 console.error("Update cart owner error:", err);
                 return res.status(500).json({ message: "Failed to update cart owner." });
             }
         }
-        // =================================================================================
 
-
-        // Generate and return unique token for the user.
+        // Generate and set unique token for the registered user.
         const token = user.generateJWT();
         // console.log("token: ", token);
 
-        // Update cookie -> build session object for a cookie. Mark user as Register, and not Authenticated.
+        // Update cookie -> build session object for a cookie. Mark user as "register", and not Authenticated yet.
         const session = {
             token,
             user_id: newUser_id,
+            isGuest: false,
             isRegistered: true,
             isAuthenticated: false
         };
 
-        // Store session in secure HttpOnly cookie
+        // Store session in secure HttpOnly cookie to prevent Cross-Site Scripting (XSS) attacks for one day.
         res.cookie("sessionData", JSON.stringify(session), {
             httpOnly: true,                  // Browser JS cannot read it
             secure: true,                    // true if using HTTPS
             sameSite: "Lax",
             path: "/",
-            maxAge: 1000 * 60 * 60 * 24 * 1  // expires 1 days
+            maxAge: 1000 * 60 * 60 * 24 * 1  // expires in 1 days
         });
 
-        // Remove guest user from database
+        // Remove guest user from database as the new user setup is completed.
         if (guestUser_id && !isRegistered) {
-            // Delete guestUser_id from database as all his cart items were migrated to newUser_id.
+            // Delete guestUser_id from database as all his cart items were transferred to the newUser_id.
             const removeGuestUser = await DB_User.findOneAndDelete({ _id: guestUser_id }).exec();
             // console.log("removeGuestUser:", removeGuestUser);
         }
 
         // Return and proceed to login or to the second verification step.
+        // Prepare text to be displayed in a alert window.
         return res.status(200).json({ token, message: `Welcome ${user.fName} ${user.lName}!
             \n You will be redirected to set up a Two Step Verification login!` });
 
@@ -133,8 +134,9 @@ const register = async (req, res) => {
 };
 
 
-// Login existing user controller
-// Validates user credentials and returns JWT if successful.
+// Login existing (registered) user controller
+// Validates user credentials sets a token and stores it in a cookie session "sessionData".
+// Returns alert message.
 const login = async (req, res) => {
     // Check that all fields are in place, else return error message
     if (!req.body.email || !req.body.password) {
@@ -142,19 +144,51 @@ const login = async (req, res) => {
     }
 
     try {
-        // Query the database for the user by email to validate credentials
+        // Query the database for the user by email to validate credentials.
         const user = await User.findOne({ email: req.body.email });
 
         // Check credentials and validate password (returns True if Hash matches)
         if (!user || !user.validPassword(req.body.password)) {
-            // No Hash matched -> invalid credentials, return to login page.
-            return res.status(401).json({ message: "Invalid credentials. Check your password or register!" });
+            // No Hash matched -> invalid credentials (can't sign in), return to login page and notify.
+            return res.status(401).json({ message: "Invalid credentials. Check your username/password or register!" });
         }
 
-        // Generate a JSON Web Token for the user for 1H if valid credentials and return it
+        // Generate a JSON Web Token for the user for 1H if credentials are valid and return token.
         const token = user.generateJWT();
-        console.log("Username: ", req.body.email, "authenticated :-)");
-        return res.status(200).json({ token });
+        // console.log("Username: ", req.body.email, "authenticated :-)", token);
+
+        // Store the token in a cookie so authStatus could read it and update the login/logout button.
+        res.cookie("sessionData", JSON.stringify({
+            token,
+            user_id: user._id,
+            isGuest: false,
+            isRegistered: true,
+            isAuthenticated: false
+        }), {
+            httpOnly: true,
+            secure: true,
+            sameSite: "Lax",
+            path: "/",
+            maxAge: 1000 * 60 * 60 * 24 // 1 day
+        });
+        return res.status(200).json({ message: `Welcome ${user.fName}!` });
+
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+};
+
+// Logout signed in user controller. Signs user out.
+const logout = async (req, res) => {
+    try {
+        // Reset cookie and return a logout message.
+        res.clearCookie("sessionData", {
+            httpOnly: true,
+            secure: true,
+            sameSite: "Lax",
+            path: "/",
+        });
+        res.status(200).json({ message: "Logged out" });
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
@@ -163,8 +197,6 @@ const login = async (req, res) => {
 // JWT authentication middleware - sits between the client’s request and the route handler.
 // Called by Express automatically before running the route logic where authentication is needed.
 const authenticateJWT = (req, res, next) => {
-    // console.log('In Middleware - authenticateJWT');
-
     // Get the token from the Authorization header
     const authHeader = req.headers.authorization;
 
@@ -189,9 +221,9 @@ const authenticateJWT = (req, res, next) => {
     });
 };
 
-// Creates a blank user account for guest users managed by unique user _id.
-// Create a signed session token for the guest user to be stored in localStorage.
-// Return the new guest user object and the signed JWT + cookie
+// Creates a temporary user account for "guest" users managed by unique user _id.
+// Create a signed session token for the guest user to be stored in a cookie.
+// Return the new guest user object and session details.
 const registerGuest = async (req, res) => {
     
     try {
@@ -209,6 +241,7 @@ const registerGuest = async (req, res) => {
         const session = {
             token,
             user_id: guestUser._id,
+            isGuest: true,
             isRegistered: false,
             isAuthenticated: false
         };
@@ -230,11 +263,11 @@ const registerGuest = async (req, res) => {
     }
 };
 
-// Defines the endpoint 'api/checkSession' for client checking if a session exist.
+// Defines the endpoint for 'api/checkSession', for client side calls checking if a session exist.
 // Returns JSON with session details or response error.
 const checkSession = async (req, res) => {
     try {
-        // Read cookie data.
+        // Read cookie data from the server
         const cookie = req.cookies.sessionData;
 
         // No cookie found, return session false.
@@ -251,7 +284,10 @@ const checkSession = async (req, res) => {
 
         // Parse cookie
         let session = JSON.parse(cookie);
-        // console.log("session:", session);
+
+        // Decode the token without verifying
+        const decoded = jwt.decode(token);
+        console.log("Token name: ", decoded.name);
 
         // Return a safe subset (without the token)
         return res.status(200).json({
@@ -277,6 +313,7 @@ const checkSession = async (req, res) => {
 module.exports = {
     register,
     login,
+    logout,
     authenticateJWT,
     registerGuest,
     checkSession
