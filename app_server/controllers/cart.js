@@ -27,10 +27,13 @@ const showCart = async function (req, res, next) {
     const options = {
         method: "GET",
         headers: {
-            Accept: "application/json",
-            // Pass the cookie along with the call so it can be read on the server
-            Cookie: `sessionData=${encodeURIComponent(sessionCookie)}`
+            Accept: "application/json"
         }
+    };
+
+    // ONLY attach cookie if it exists
+    if (sessionCookie) {
+        options.headers.Cookie = `sessionData=${encodeURIComponent(sessionCookie)}`;
     }
 
     // Make a GET request to the API endpoint to fetch items
@@ -50,7 +53,7 @@ const showCart = async function (req, res, next) {
         if (!Array.isArray(json)) {
             json = {}
             message = "No trips were found in the database.";
-            console.log(message);
+            // console.log(message);
         }
 
         // Render the cart page view with the fetched items in the cart and a message (Response 200 OK)

@@ -176,7 +176,7 @@ async function handleRegister(event) {
     email: document.getElementById("regEmail").value.trim(),
     password: document.getElementById("regPass").value.trim(),
     isRegistered: isRegistered,                    // new unregistered user
-    isAdmin: false                          // user role
+    isAdmin: false                                 // user role
   };
   // console.log("Register form:", registerForm);
 

@@ -68,10 +68,10 @@ const allCartItemsList = async (req, res) => {
         // Otherwise, return 200 OK and a json result
         return res.status(200).json(query);
 
-        } catch (err) {
-            console.error("Error retrieving trips:", err);
-            return res.status(404).json({ message: "Server error", error: err });
-        }
+    } catch (err) {
+        console.error("Error retrieving trips:", err);
+        return res.status(404).json({ message: "Server error", error: err });
+    }
 };
 
 // Function queries the database to find any single object from a given collection

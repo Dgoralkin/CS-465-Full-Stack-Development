@@ -72,7 +72,7 @@ const register = async (req, res) => {
         const guestUser_id = req.body.user_id;
         const newUser_id = user._id;
         const isRegistered = req.body.isRegistered;
-        console.log("isRegistered", isRegistered);
+        // console.log("isRegistered", isRegistered);
         if (guestUser_id && !isRegistered) {
             console.log("inside register, guestUser_id:", guestUser_id, "\nTODO: 1. update all cart items with the new user_id");
 
