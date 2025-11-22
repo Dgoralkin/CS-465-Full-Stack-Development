@@ -148,12 +148,12 @@ const login = async (req, res) => {
         // Check credentials and validate password (returns True if Hash matches)
         if (!user || !user.validPassword(req.body.password)) {
             // No Hash matched -> invalid credentials, return to login page.
-            return res.status(401).json({ message: "Invalid credentials" });
+            return res.status(401).json({ message: "Invalid credentials. Check your password or register!" });
         }
 
         // Generate a JSON Web Token for the user for 1H if valid credentials and return it
         const token = user.generateJWT();
-        // console.log("Username: ", req.body.email, "authenticated :-)");
+        console.log("Username: ", req.body.email, "authenticated :-)");
         return res.status(200).json({ token });
     } catch (err) {
         return res.status(500).json({ error: err.message });
@@ -241,12 +241,17 @@ const checkSession = async (req, res) => {
         if (!cookie) {
             return res.status(200).json({
                 hasSession: false,
-                session: null
+                session: {
+                user_id: "",
+                isRegistered: false,
+                isAuthenticated: false
+            }
             });
         }
 
         // Parse cookie
         let session = JSON.parse(cookie);
+        // console.log("session:", session);
 
         // Return a safe subset (without the token)
         return res.status(200).json({

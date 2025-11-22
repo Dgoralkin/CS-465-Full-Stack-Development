@@ -76,13 +76,37 @@ async function registerNewUser(registerForm) {
   }
 }
 
+// Make a call to /api/login and sign in a user if user is registered.
+async function loginUser(loginForm) {
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // Include user details in the body as a JSON object.
+      body: JSON.stringify(loginForm)
+    });
+
+    // Read response from the controller and display a confirmation message in a pop out window.
+    // If server returned an error (status 409), means that a user with same email already exists in DB.
+    // Display alert message to acknowledge user and return to login page.
+    const result = await response.json();
+    window.alert(result.message || 'Welcome!');
+    return response;
+  } 
+  catch (err) {
+    // Return a fake error-like response to avoid undefined
+    console.error("Network or server error:", err);
+    return { ok: false, status: 0, json: async () => ({ message: "Network error. Try again later." }) };
+  }
+}
+
 // =========================================================
 // LOGIN FORM HANDLER:
 // Validates all fields are filled and prepares JSON object.
 // =========================================================
 
 // Prevent default form submission and validate form input.
-function handleLogin(event) {
+async function handleLogin(event) {
 
   event.preventDefault();
   const form = document.getElementById("loginForm");
@@ -101,7 +125,14 @@ function handleLogin(event) {
   };
   console.log("Login form:", { loginForm });
 
-  // TODO: Send login request to backend fetch(`/api/login`, {...})
+  // Send login request /api/login carrying a body message to sign in existing user..
+  const response = await loginUser(loginForm);
+
+  // Return back to the login page if couldn't sign in user because he doesn't exist or password doesn't match.
+  if (!response.ok) { return response; }
+
+  // Account created successfully. Activate Online one-time password generator.
+  console.log("IMPLEMENT: Returned to handleLogin() from loginUser()");
 }
 
 
@@ -131,7 +162,7 @@ async function handleRegister(event) {
     return;
   }
 
-  // Get unique user ID by checking if session exist and querying cookie.
+  // Get unique user ID and user status by checking if session/cookie exist.
   const res = await fetch("/api/checkSession");
   const data = await res.json();
   const user_id = data.session.user_id;
