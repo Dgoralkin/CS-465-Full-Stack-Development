@@ -68,11 +68,16 @@ const register = async (req, res) => {
             }
         }
         
-        // Collect user details from a message body to update the just created user.
-        const guestUser_id = req.body.user_id;
+        // Read cookie data from the server
+        const cookie = req.cookies.sessionData;
+        const olsSession = JSON.parse(cookie);
+        const guestUser_id = olsSession.user_id;
+
         const newUser_id = user._id;
+
+        // Collect user details from a message body to update the created permanent user.
         const isRegistered = req.body.isRegistered;
-        // console.log("guestUser_id, isRegistered:", guestUser_id, isRegistered);
+        // console.log("guestUser_id, isRegistered:", guestUser_id, "move to ->", newUser_id, isRegistered);
 
         // Handle a guest to -> registered user scenario session upgrade.
         // If a call comes while carrying guest user id, and the user is not registered yet to the website.
@@ -98,6 +103,7 @@ const register = async (req, res) => {
         // Update cookie -> build session object for a cookie. Mark user as "register", and not Authenticated yet.
         const session = {
             token,
+            hasSession: true,
             user_id: newUser_id,
             isGuest: false,
             isRegistered: true,
@@ -160,6 +166,7 @@ const login = async (req, res) => {
         // Store the token in a cookie so authStatus could read it and update the login/logout button.
         res.cookie("sessionData", JSON.stringify({
             token,
+            hasSession: true,
             user_id: user._id,
             isGuest: false,
             isRegistered: true,
@@ -240,6 +247,7 @@ const registerGuest = async (req, res) => {
         // Build session object for a cookie
         const session = {
             token,
+            hasSession: true,
             user_id: guestUser._id,
             isGuest: true,
             isRegistered: false,
@@ -269,6 +277,7 @@ const checkSession = async (req, res) => {
     try {
         // Read cookie data from the server
         const cookie = req.cookies.sessionData;
+        // console.log("cookie in checkSession:", cookie);
 
         // No cookie found, return session false.
         if (!cookie) {
@@ -286,17 +295,15 @@ const checkSession = async (req, res) => {
         let session = JSON.parse(cookie);
 
         // Decode the token without verifying
-        const decoded = jwt.decode(token);
-        console.log("Token name: ", decoded.name);
+        const decoded = jwt.decode(session.token);
 
         // Return a safe subset (without the token)
         return res.status(200).json({
             hasSession: true,
-            session: {
-                user_id: session.user_id,
-                isRegistered: session.isRegistered,
-                isAuthenticated: session.isAuthenticated
-            }
+            user_id: session._id,
+            isGuest: true,
+            isRegistered: session.isRegistered,
+            isAuthenticated: session.isAuthenticated
         });
 
     } catch (err) {

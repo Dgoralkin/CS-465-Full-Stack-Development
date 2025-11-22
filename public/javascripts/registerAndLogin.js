@@ -193,8 +193,8 @@ async function handleRegister(event) {
   // Get unique user ID and user status by checking if session/cookie exist.
   const res = await fetch("/api/checkSession");
   const data = await res.json();
-  const user_id = data.session.user_id;
-  const isRegistered = data.session.isRegistered;
+  const user_id = data.user_id;
+  const isRegistered = data.isRegistered;
 
   // Fetch and trim all input values in a JSON object
   const registerForm = {

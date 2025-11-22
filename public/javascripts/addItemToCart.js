@@ -59,6 +59,9 @@ document.querySelectorAll('.add-to-cart-form').forEach(form => {
         const res = await fetch("/api/checkSession");
         const data = await res.json();
 
+        console.log("data: ", data);
+        console.log("data.hasSession: ", data.hasSession);
+
         if (!data.hasSession) {
             const guestUser_id = await setGuestUser();
             // console.log("User account created -> guestUser_id:", guestUser_id);         // New guest user id
