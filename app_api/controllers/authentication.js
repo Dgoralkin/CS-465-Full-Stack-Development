@@ -28,8 +28,7 @@ const DB_User = require('../models/user');
 //       *** Helper functions ***           //
 // ======================================== //
 
-
-const setTokenAndSession = (user, user_id, res) => {
+const setTokenAndCookie = (user, user_id, res) => {
     // Generate and set unique token for the registered user.
     const token = user.generateJWT();
     // console.log("token: ", token);
@@ -105,11 +104,11 @@ const register = async (req, res) => {
         // Used to identify if a user is "guest" or trying to register without having previous session.
         const cookie = req.cookies?.sessionData;
         if (!cookie) {
-            console.log(" NO COOKIE");
+            // console.log("No cookie found");
 
             // Call internal helper function to sign a token and set a session cookie.
             // Passing an existing user instance and the existing user id to be set.
-            const token = setTokenAndSession(user, user._id, res);
+            const token = setTokenAndCookie(user, user._id, res);
             
             // Return and proceed to login or to the second verification step.
             // Prepare text to be displayed in a alert window.
@@ -145,7 +144,7 @@ const register = async (req, res) => {
 
         // Call internal helper function to sign a token and set a session cookie.
         // Passing an existing user instance and the new user id to be updated.
-        const token = setTokenAndSession(user, newUser_id, res);
+        const token = setTokenAndCookie(user, newUser_id, res);
 
         // Remove guest user from database as the new user setup is completed.
         if (guestUser_id && !isRegistered) {
@@ -206,7 +205,7 @@ const login = async (req, res) => {
             path: "/",
             maxAge: 1000 * 60 * 60 * 24 // 1 day
         });
-        return res.status(200).json({ message: `Welcome ${user.fName}!` });
+        return res.status(200).json({ token, message: `Welcome ${user.fName}!` });
 
     } catch (err) {
         return res.status(500).json({ error: err.message });
