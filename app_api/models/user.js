@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
     lName: { type: String, default: null},
     hash: { type: String },
     salt: { type: String },
-    email: { type: String, unique: true, default: Date.now },           // Use email as unique identifier uses date as a unique placeholder.
+    email: { type: String, unique: true, default: Date.now, index: true },           // Use email as unique identifier uses date as a unique placeholder.
     isRegistered: { type: Boolean, default: false },                    // An unregistered and not an Admin user is a Guest user.
     isAdmin: { type: Boolean, default: false },                         // Used by the Angular Admin website for managing the app.  
     userSince: { type: Date, default: Date.now }                        // Store first session date

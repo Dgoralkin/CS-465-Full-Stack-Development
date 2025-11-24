@@ -23,6 +23,39 @@ const User = require("../models/user");
 const DB_Cart = require('../models/cartSchema');
 const DB_User = require('../models/user');
 
+
+// ======================================== //
+//       *** Helper functions ***           //
+// ======================================== //
+
+
+const setTokenAndSession = (user, user_id, res) => {
+    // Generate and set unique token for the registered user.
+    const token = user.generateJWT();
+    // console.log("token: ", token);
+
+    // Update cookie -> build session object for a cookie. Mark user as "register", and not Authenticated yet.
+    const session = {
+        token,
+        hasSession: true,
+        user_id: user_id,
+        isGuest: false,
+        isRegistered: true,
+        isAuthenticated: false
+    };
+
+    // Store session in secure HttpOnly cookie to prevent Cross-Site Scripting (XSS) attacks for one day.
+    res.cookie("sessionData", JSON.stringify(session), {
+        httpOnly: true,                  // Browser JS cannot read it
+        secure: true,                    // true if using HTTPS
+        sameSite: "Lax",
+        path: "/",
+        maxAge: 1000 * 60 * 60 * 24 * 1  // expires in 1 days
+    });
+
+    return token;
+}
+
 // ======================================== //
 //       *** Authentication Methods ***     //
 // ======================================== //
@@ -68,11 +101,25 @@ const register = async (req, res) => {
             }
         }
         
-        // Read cookie data from the server
-        const cookie = req.cookies.sessionData;
-        const olsSession = JSON.parse(cookie);
-        const guestUser_id = olsSession.user_id;
+        // Request cookie data from the server and check if a cookie exist and session set
+        // Used to identify if a user is "guest" or trying to register without having previous session.
+        const cookie = req.cookies?.sessionData;
+        if (!cookie) {
+            console.log(" NO COOKIE");
 
+            // Call internal helper function to sign a token and set a session cookie.
+            // Passing an existing user instance and the existing user id to be set.
+            const token = setTokenAndSession(user, user._id, res);
+            
+            // Return and proceed to login or to the second verification step.
+            // Prepare text to be displayed in a alert window.
+            return res.status(200).json({ token, message: `Welcome ${user.fName} ${user.lName}!
+                \n You will be redirected to set up a Two Step Verification login!` });
+        }
+
+        // Session exist, user has "guest" session and his cart must be migrated to his new "registered" account.
+        const oldSession = JSON.parse(cookie);
+        const guestUser_id = oldSession.user_id;
         const newUser_id = user._id;
 
         // Collect user details from a message body to update the created permanent user.
@@ -96,28 +143,9 @@ const register = async (req, res) => {
             }
         }
 
-        // Generate and set unique token for the registered user.
-        const token = user.generateJWT();
-        // console.log("token: ", token);
-
-        // Update cookie -> build session object for a cookie. Mark user as "register", and not Authenticated yet.
-        const session = {
-            token,
-            hasSession: true,
-            user_id: newUser_id,
-            isGuest: false,
-            isRegistered: true,
-            isAuthenticated: false
-        };
-
-        // Store session in secure HttpOnly cookie to prevent Cross-Site Scripting (XSS) attacks for one day.
-        res.cookie("sessionData", JSON.stringify(session), {
-            httpOnly: true,                  // Browser JS cannot read it
-            secure: true,                    // true if using HTTPS
-            sameSite: "Lax",
-            path: "/",
-            maxAge: 1000 * 60 * 60 * 24 * 1  // expires in 1 days
-        });
+        // Call internal helper function to sign a token and set a session cookie.
+        // Passing an existing user instance and the new user id to be updated.
+        const token = setTokenAndSession(user, newUser_id, res);
 
         // Remove guest user from database as the new user setup is completed.
         if (guestUser_id && !isRegistered) {
@@ -201,31 +229,34 @@ const logout = async (req, res) => {
     }
 };
 
+// Helper function for authenticateJWT. Safely checks if a token exist in the header.
+const verifyToken = (token) => {
+    if (!token) return { valid: false, message: "No token provided" };
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        return { valid: true, decoded };
+    } catch (err) {
+        return { valid: false, message: "Invalid or expired token" };
+    }
+};
+
+
 // JWT authentication middleware - sits between the client’s request and the route handler.
 // Called by Express automatically before running the route logic where authentication is needed.
 const authenticateJWT = (req, res, next) => {
+
     // Get the token from the Authorization header
     const authHeader = req.headers.authorization;
+    const token = authHeader?.split(" ")[1];
 
-    // Check if the header is present, return 401 if missing
-    if (!authHeader) {
-        console.log('Not enough tokens in Auth Header.');
-        return res.status(401).json({ message: "Missing Authorization header" });
-    }
+    // Call the helper function to decode the token.
+    const { valid, decoded, message } = verifyToken(token);
 
-    // Extract (["Bearer", "eyJhbGciOiJIUzI1NiIs..."]) and store the token.
-    const token = authHeader.split(" ")[1];
+    if (!valid) return res.status(401).json({ message });
 
-    // Verify the token is valid and up to date.
-    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-        if (err) {
-            return res.status(403).json({ message: "Invalid or expired token" });
-        }
-
-        // Token is valid, store decoded user info in request object for use in next middleware/route
-        req.user = decoded;
-        next();
-    });
+    req.user = decoded;
+    next();
 };
 
 // Creates a temporary user account for "guest" users managed by unique user _id.
