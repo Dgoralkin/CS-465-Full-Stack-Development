@@ -17,9 +17,8 @@ import { BROWSER_STORAGE } from '../storage';             // Gives access to our
 })
 
 export class TripData {
-/*
   // Define URLs for development usage (localhost)
-  private baseUrl = `http://localhost:3000/api`;
+  /*private baseUrl = `http://localhost:3000/api`;
   private tripsUrl = `${this.baseUrl}/travel`;*/
 
   

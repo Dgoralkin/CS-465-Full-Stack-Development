@@ -20,11 +20,12 @@ const router = express.Router();
 const authController = require("../controllers/authentication");
 
 // Defines the endpoint '/checkSession' for client side checking if a session exist.
-router.route("/checkSession").get(authController.checkSession);        // Registers new users.
+router.route("/checkSession").get(authController.checkSession);        // Validates is a session or a token exist.
 
 // Defines the endpoint '/register', '/login', and /guest for user creation and authentication.
 router.route("/register").post(authController.register);               // Registers new users.
-router.route("/login").post(authController.login);                     // Logs existing users in.
+router.route("/login").post(authController.login);                     // Sign existing users in.
+router.route("/logout").post(authController.logout);                   // Log existing users out.
 router.route("/guest").post(authController.registerGuest);             // Creates a dummy account for a guest user.
 
 // Export the router object to be used in other parts of the application

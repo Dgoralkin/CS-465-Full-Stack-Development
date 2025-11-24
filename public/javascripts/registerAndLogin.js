@@ -35,10 +35,10 @@ function formIsValid(formElement) {
   return { valid: true };
 }
 
-// Display an error — replace this later with your UI preferred method
+// Display an error message in an alert view.
 function displayError(msg) {
   console.error(msg);
-  alert(msg); // temporary until you add UI elements
+  alert(msg);
 }
 
 // Show or hide password in the forms
@@ -76,13 +76,65 @@ async function registerNewUser(registerForm) {
   }
 }
 
+// Make a call to /api/login and sign in a user if user is registered.
+async function loginUser(loginForm) {
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      // Include user details in the body as a JSON object.
+      body: JSON.stringify(loginForm),
+      credentials: "include"
+    });
+
+    // Read response from the controller and display a confirmation message in a pop out window.
+    // If server returned an error (status 409), means that a user with same email already exists in DB.
+    // Display alert message to acknowledge user and return to login page.
+    const result = await response.json();
+    
+    window.alert(result.message || 'Welcome!');
+
+    // Trigger a reload so header updates based on session cookie and trigger the login/logout button change.
+    window.location.reload();
+    return response;
+
+  } 
+  catch (err) {
+    // Return a fake error-like response to avoid undefined
+    console.error("Network or server error:", err);
+    return { ok: false, status: 0, json: async () => ({ message: "Network error. Try again later." }) };
+  }
+}
+
+// Remove token cookie by contacting backend logout endpoint to sign user out.
+async function logoutUser() {
+  try {
+    // Contact backend via POST
+    const response = await fetch('/api/logout', {
+      method: 'POST',
+      credentials: "include"
+    });
+
+    const loggedOut = await response.json();
+    console.log("response / loggedOut: ",response, loggedOut);
+
+    // Reload to trigger header refresh
+    if (response.ok) {
+      window.location.reload();
+    }
+
+  } catch (err) {
+    console.log("Error signing user out", err);
+  }
+}
+
 // =========================================================
 // LOGIN FORM HANDLER:
 // Validates all fields are filled and prepares JSON object.
 // =========================================================
 
 // Prevent default form submission and validate form input.
-function handleLogin(event) {
+async function handleLogin(event) {
 
   event.preventDefault();
   const form = document.getElementById("loginForm");
@@ -99,9 +151,16 @@ function handleLogin(event) {
     email: document.getElementById("loginEmail").value.trim(),
     password: document.getElementById("loginPassword").value.trim(),
   };
-  console.log("Login form:", { loginForm });
+  // console.log("Login form:", { loginForm });
 
-  // TODO: Send login request to backend fetch(`/api/login`, {...})
+  // Send login request /api/login carrying a body message to sign in existing user..
+  const response = await loginUser(loginForm);
+
+  // Return back to the login page if couldn't sign in user because he doesn't exist or password doesn't match.
+  if (!response.ok) { return response; }
+
+  // Account created successfully. Activate Online one-time password generator.
+  console.log("IMPLEMENT: Returned to handleLogin() from loginUser()");
 }
 
 
@@ -131,11 +190,11 @@ async function handleRegister(event) {
     return;
   }
 
-  // Get unique user ID by checking if session exist and querying cookie.
+  // Get unique user ID and user status by checking if session/cookie exist.
   const res = await fetch("/api/checkSession");
   const data = await res.json();
-  const user_id = data.session.user_id;
-  const isRegistered = data.session.isRegistered;
+  const user_id = data.user_id;
+  const isRegistered = data.isRegistered;
 
   // Fetch and trim all input values in a JSON object
   const registerForm = {
@@ -145,7 +204,7 @@ async function handleRegister(event) {
     email: document.getElementById("regEmail").value.trim(),
     password: document.getElementById("regPass").value.trim(),
     isRegistered: isRegistered,                    // new unregistered user
-    isAdmin: false                          // user role
+    isAdmin: false                                 // user role
   };
   // console.log("Register form:", registerForm);
 
@@ -157,14 +216,24 @@ async function handleRegister(event) {
 
   // Account created successfully. Activate Online one-time password generator.
   console.log("IMPLEMENT: Online one-time password generator / TOTP");
-
 }
 
 
-// =========================
-// Attach event listeners to fetch form data.
-// =========================
+// ===================================
+// Event listeners to fetch form data.
+// ===================================
 
 document.getElementById("loginForm").addEventListener("submit", handleLogin);             // Submit login form
 document.getElementById("registerForm").addEventListener("submit", handleRegister);       // Submit register form
 document.getElementById("showPassword").addEventListener("change", showPassword);         // Hide/unhide password
+
+// 
+document.addEventListener('DOMContentLoaded', () => {
+  const logoutBtn = document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      logoutUser();
+    });
+  }
+});
