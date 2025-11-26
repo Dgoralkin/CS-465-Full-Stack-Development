@@ -42,6 +42,7 @@ const aboutRouter = require('./app_server/routes/about');         // Update the 
 const contactRouter  = require('./app_server/routes/contact');    // Update the path for the contact us page
 const cartRouter  = require('./app_server/routes/cart');          // Update the path for the shopping cart page
 const userLoginRouter  = require('./app_server/routes/registerAndLogin'); // path for the login and register page
+const userSetup2faRouter  = require('./app_server/routes/setup2FA'); // path for the user 2FA setup page
 
 // Setup rest api routes for page navigation
 const indexApiRouter = require('./app_api/routes/index_api');         // Path to the index api
@@ -52,6 +53,7 @@ const newsApiRouter = require('./app_api/routes/news_api');           // Path to
 const contactUsApiRouter = require('./app_api/routes/contact_api');   // Path to the contact api
 const cartApiRouter = require('./app_api/routes/cart_api');           // Path to the contact api
 const authRoutes = require("./app_api/routes/authentication");        // Path to the authentication api
+const twoAutApiRouter = require("./app_api/routes/setup2FA");                // Path to the 2FA setup api
 
 // Enable handlebars to render in multiple pages
 const handlebars = require('hbs');
@@ -130,6 +132,8 @@ app.use('/', aboutRouter);                  // Go to the about page.
 app.use('/', contactRouter);                // Go to the contact us page.
 app.use('/', cartRouter);                   // Go to cart page.
 app.use('/', userLoginRouter);              // Go to user login page.
+app.use('/', userLoginRouter);              // Go to user login page.
+app.use('/', userSetup2faRouter);           // Go to user 2FA page.
 
 // Wire-up api routes to controllers
 app.use('/api', indexApiRouter);            // Trigger the api for the index homepage from app_api/routes/index_api
@@ -140,6 +144,7 @@ app.use('/api', newsApiRouter);             // Trigger the api for the news page
 app.use('/api', contactUsApiRouter);        // Trigger the api for the contact us page from app_api/routes/news_api
 app.use("/api", cartApiRouter);             // Trigger the api for the cart page from app_api/routes/cart_api
 app.use("/api", authRoutes);                // Trigger the api for authentication from app_api/routes/authentication
+app.use("/api", twoAutApiRouter);             // Trigger the api for 2FA setup from app_api/routes/2FA
 
 // Catch 404 and forward to error handler
 app.use(function(req, res, next) {

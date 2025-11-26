@@ -12,6 +12,7 @@
   - The schema includes methods for setting passwords, validating passwords, and generating JSON Web Tokens (JWTs).
   - The schema is then compiled into a Mongoose model for use in the application.
   - Security measures such as password hashing and token expiration are implemented.
+  - User schema defines parameters for Google's Time-based One Time Password authenticator.
   - The email field is indexed for uniqueness to prevent duplicate user accounts.
 =========================================================================================== */
 
@@ -21,6 +22,7 @@ const mongoose = require("mongoose");
 // Import crypto and jwt modules for password hashing and token generation
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
+const { type } = require("os");
 
 // Structure of the user collection in MongoDB
 // Define the user collection schema for users and admin.
@@ -29,10 +31,12 @@ const userSchema = new mongoose.Schema({
     lName: { type: String, default: null},
     hash: { type: String },
     salt: { type: String },
-    email: { type: String, unique: true, default: Date.now, index: true },           // Use email as unique identifier uses date as a unique placeholder.
-    isRegistered: { type: Boolean, default: false },                    // An unregistered and not an Admin user is a Guest user.
-    isAdmin: { type: Boolean, default: false },                         // Used by the Angular Admin website for managing the app.  
-    userSince: { type: Date, default: Date.now }                        // Store first session date
+    email: { type: String, unique: true, default: Date.now, index: true },      // Use email as unique identifier uses date as a unique placeholder.
+    isRegistered: { type: Boolean, default: false },                            // An unregistered and not an Admin user is a Guest user.
+    isAdmin: { type: Boolean, default: false },                                 // Used by the Angular Admin website for managing the app.  
+    userSince: { type: Date, default: Date.now },                               // Store first session date
+    twoFactorEnabled: { type: Boolean, default: false },                        // Indicator for the TOTP validator
+    twoFactorSecret: { type: String, default: null },                           // Stores the secret key for the TOTP validator
 });
 
 // Method to set the password for this record.

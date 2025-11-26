@@ -8,9 +8,9 @@
 
   Purpose:
     - Used to register new "customer" users and add the created user account to the database.
+    - Used to upgrade guest user account into registered accounts
     - The login method validated that all fields were entered and the username and password are correct.
-    - Allows registered users to recover their forgotten password.
-    - Uses Google's Two Factor Auth to authenticate users.
+    - Uses Google's Two Factor Auth to authenticate users via TOTP.
 ===================================================================== */
 
 // =================================================================================================
@@ -66,8 +66,19 @@ async function registerNewUser(registerForm) {
     // If server returned an error (status 409), means that a user with same email already exists in DB.
     // Display alert message to acknowledge user and return to login page.
     const result = await response.json();
-    window.alert(result.message || 'Welcome!');
-    return response;
+
+    // Return status code, and a welcome message via alert message.
+    if (response.ok) {
+      return {
+      ok: response.ok,
+      status: response.status,
+      message: result.message
+    };
+    } else {
+      // Display an alert message that a user with this email already exist.
+      window.alert(result.message || 'Try to register!');
+      return }
+    
   } 
   catch (err) {
     // Return a fake error-like response to avoid undefined
@@ -169,6 +180,7 @@ async function handleLogin(event) {
 // =========================
 
 // Prevent default form submission and validate form input.
+// Registers new users and redirects them to the 2FA setup page.
 async function handleRegister(event) {
 
   event.preventDefault();
@@ -209,13 +221,51 @@ async function handleRegister(event) {
   // console.log("Register form:", registerForm);
 
   // Send register request /api/register carrying a body message to create a new user account.
-  const response = await registerNewUser(registerForm);
+  const userRegistered = await registerNewUser(registerForm);
 
   // Return back to the login page if couldn't add new user and create new registered account.
-  if (!response.ok) { return response; }
+  if (!userRegistered.ok) { return userRegistered; }
 
-  // Account created successfully. Activate Online one-time password generator.
-  console.log("IMPLEMENT: Online one-time password generator / TOTP");
+  // User account created successfully. Get permission to set up the 2FA auth via a confirmation alert.
+  if (confirm(`${userRegistered.message}\nEnable 2-Factor Authentication now?`)) {
+
+    /// Set up Online One-Time Password authentication (TOTP). Pass session data.
+    const session = await setup2FA(data);
+
+    // Redirect to rendering route
+    window.location.href = "/2fa/setup";
+
+  } else {
+    alert(result.message);
+    return;
+  }
+  
+}
+
+// Make a call to api/2fa/setup and setup the 2FA 
+async function setup2FA(session) {
+  try {
+    const response = await fetch('/api/2fa/setup', {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session.token}`
+      },
+      body: JSON.stringify({ session })
+    });
+
+    const data = await response.json();
+
+    // console.log("2FA data:", data);
+    // console.log("2FA data:", data.qrCode);
+    // console.log("2FA data:", data.token);
+    // console.log("2FA data:", data.message);
+
+    return data;
+
+  } catch (err) {
+    console.error("setup2FA error:", err);
+  }
 }
 
 
