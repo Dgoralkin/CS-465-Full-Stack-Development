@@ -113,7 +113,7 @@ const register = async (req, res) => {
             // Return and proceed to login or to the second verification step.
             // Prepare text to be displayed in a alert window.
             return res.status(200).json({ token, message: `Welcome ${user.fName} ${user.lName}!
-                \n You will be redirected to set up a Two Step Verification login!` });
+                \nYou will be redirected to set up a Two Step Authentication login!` });
         }
 
         // Session exist, user has "guest" session and his cart must be migrated to his new "registered" account.
@@ -156,7 +156,7 @@ const register = async (req, res) => {
         // Return and proceed to login or to the second verification step.
         // Prepare text to be displayed in a alert window.
         return res.status(200).json({ token, message: `Welcome ${user.fName} ${user.lName}!
-            \n You will be redirected to set up a Two Step Verification login!` });
+            \nYou will be redirected to set up a Two Step Authentication login!` });
 
     } catch (err) {
         console.error("Register error:", err);
@@ -329,9 +329,10 @@ const checkSession = async (req, res) => {
 
         // Return a safe subset (without the token)
         return res.status(200).json({
+            token: session.token,
             hasSession: true,
             user_id: session._id,
-            isGuest: true,
+            isGuest: session.isGuest,
             isRegistered: session.isRegistered,
             isAuthenticated: session.isAuthenticated
         });

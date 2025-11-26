@@ -48,18 +48,18 @@ export class Authentication {
   /*  Accessor and mutator methods for moving data in and out of the local storage 
     through our Storage provider */
 
-public isLoggedIn(): boolean {
-  const token: string = this.getToken();
-  if (!token || token === "") return false;
-
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    return payload.exp > (Date.now() / 1000);
-  } catch (err) {
-    console.error('Invalid token:', token, err);
-    return false;
+  public isLoggedIn(): boolean {
+    // Boolean to determine if we are logged in and the token is still valid.
+    const token: string = this.getToken();
+    console.log("token:", token);
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.exp > (Date.now() / 1000);
+      console.log("Token expired, please login.");
+    } else {
+      return false; // Token is valid
+    }
   }
-}
 
   /*  Retrieve the current user. This function should only be called after the calling method 
     has checked to make sure that the user isLoggedIn. */
