@@ -45,7 +45,7 @@ const setup2FA = async (req, res) => {
 
         // Generate secret key for the TOTP authenticator
         const secret = speakeasy.generateSecret({
-            name: `travlr-(${user.email})`,
+            name: `Travlr-(${user.email})`,
             length: 32
         });
 
@@ -137,7 +137,7 @@ const verify2FA = async (req, res) => {
             secure: true,
             sameSite: "Lax",
             path: "/",
-            maxAge: 1000 * 60 * 60 * 24 * 1
+            maxAge: 1000 * 60 * 60 * 24 * 1,
         });
 
         const message = {

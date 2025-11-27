@@ -124,11 +124,24 @@ async function loginUser(loginForm) {
     // If server returned an error (status 409), means that a user with same email already exists in DB.
     // Display alert message to acknowledge user and return to login page.
     const result = await response.json();
-    
     window.alert(result.message || 'Welcome!');
 
+    // Redirect to the 2FA page to enter the TOPT code.
+    if (result.twoFactorEnabled) {
+      // Redirect to rendering route
+      console.log("twoFactorEnabled", result.twoFactorEnabled);
+
+      // Set up Online One-Time Password authentication (TOTP). Pass session data.
+      /*const res = await fetch("/api/checkSession");
+      const data = await res.json();
+      const session = await setup2FA(data);*/
+
+      window.location.href = "/";
+      return;
+    }
+
     // Trigger a reload so header updates based on session cookie and trigger the login/logout button change.
-    window.location.reload();
+    window.location.href = "/";
     return response;
 
   } 
@@ -161,6 +174,7 @@ async function logoutUser() {
   }
 }
 
+
 // =========================================================
 // LOGIN FORM HANDLER:
 // Validates all fields are filled and prepares JSON object.
@@ -191,9 +205,6 @@ async function handleLogin(event) {
 
   // Return back to the login page if couldn't sign in user because he doesn't exist or password doesn't match.
   if (!response.ok) { return response; }
-
-  // Account created successfully. Activate Online one-time password generator.
-  console.log("IMPLEMENT: Returned to handleLogin() from loginUser()");
 }
 
 
@@ -251,7 +262,7 @@ async function handleRegister(event) {
   // User account created successfully. Get permission to set up the 2FA auth via a confirmation alert.
   if (confirm(`${userRegistered.message}\nEnable 2-Factor Authentication now?`)) {
 
-    /// Set up Online One-Time Password authentication (TOTP). Pass session data.
+    // Set up Online One-Time Password authentication (TOTP). Pass session data.
     const session = await setup2FA(data);
 
     // Redirect to rendering route
@@ -262,7 +273,6 @@ async function handleRegister(event) {
     return;
   }  
 }
-
 
 
 // ===================================

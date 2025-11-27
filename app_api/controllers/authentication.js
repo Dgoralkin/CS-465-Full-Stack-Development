@@ -189,6 +189,9 @@ const login = async (req, res) => {
         // Generate a JSON Web Token for the user for 1H if credentials are valid and return token.
         const token = user.generateJWT();
         // console.log("Username: ", req.body.email, "authenticated :-)", token);
+        
+        // Check if user has a valid 2FA
+        const twoFactorEnabled = user.twoFactorEnabled
 
         // Store the token in a cookie so authStatus could read it and update the login/logout button.
         res.cookie("sessionData", JSON.stringify({
@@ -197,7 +200,7 @@ const login = async (req, res) => {
             user_id: user._id,
             isGuest: false,
             isRegistered: true,
-            isAuthenticated: false
+            isAuthenticated: twoFactorEnabled
         }), {
             httpOnly: true,
             secure: true,
@@ -205,7 +208,9 @@ const login = async (req, res) => {
             path: "/",
             maxAge: 1000 * 60 * 60 * 24 // 1 day
         });
-        return res.status(200).json({ token, message: `Welcome ${user.fName}!` });
+
+        // Return status 200/OK
+        return res.status(200).json({ token, twoFactorEnabled, message: `Welcome ${user.fName} ${user.lName}!` });
 
     } catch (err) {
         return res.status(500).json({ error: err.message });
