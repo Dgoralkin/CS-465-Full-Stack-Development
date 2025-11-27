@@ -1,7 +1,27 @@
 {
     "heading": "Enjoy the Summer with Us!",
     "heading_text": "This website template has been designed by <a href=\"http://www.freewebsitetemplates.com/\">Free Website Templates</a> for you for free. You can replace all this text with your own text. You can remove any link to our website from this website template, you're free to use this website template without linking back to us. If you're having problems editing this website template, then don't hesitate to ask for help on the <a href=\"http://www.freewebsitetemplates.com/forums/\">Forum</a>.",
-
+    
+    "Slider_Images": [
+        {
+            "title": "Welcome to Travlr",
+            "description": "The place where your dreams come true.",
+            "image": "Slider1.jpg",
+            "image_alt": "Ocean view"
+        },
+        {
+            "title": "Enjoy epic views",
+            "description": "Find peace and luxury in our beautiful suites.",
+            "image": "Slider2.jpg",
+            "image_alt": "Caribbean view"
+        },
+                {
+            "title": "Travel all year around",
+            "description": "Discover winter wonders.",
+            "image": "Slider3.jpg",
+            "image_alt": "Frozen lake"
+        }
+    ],
     "Latest_Blog": "Latest Blog",
     "Blog_Entries": [
         {

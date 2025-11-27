@@ -285,6 +285,91 @@ textarea {
 }
 
 /* ===============================
+   SLIDER / AD BOX
+================================== */
+
+#adbox.slider {
+  position: relative;
+  width: 100%;
+  max-height: 400px;
+  overflow: hidden;
+  border-radius: 16px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.slides-container {
+  display: flex;
+  transition: transform 0.6s ease-in-out;
+}
+
+.slide {
+  min-width: 100%;
+  position: relative;
+  display: none;
+}
+
+.slide.active {
+  display: block;
+}
+
+.slide img {
+  width: 100%;
+  height: 380px;
+  object-fit: cover;
+}
+
+.slide-caption {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+  background: rgba(0,0,0,0.45);
+  padding: 15px 20px;
+  border-radius: 8px;
+  color: #fff;
+  max-width: 60%;
+}
+
+.slide-caption h1 {
+  margin: 0 0 5px;
+  font-size: 2rem;
+}
+
+.slide-caption p {
+  margin: 0;
+  font-size: 1rem;
+  color: #fff !important;
+}
+
+/* Slider buttons */
+.slider-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.5);
+  border: none;
+  padding: 10px 15px;
+  color: white;
+  font-size: 1.8rem;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+  z-index: 10;
+}
+
+.slider-btn:hover {
+  background: rgba(0,0,0,0.8);
+}
+
+.slider-btn.prev {
+  left: 10px;
+}
+
+.slider-btn.next {
+  right: 10px;
+}
+
+
+/* ===============================
    Main & Sidebar Layout
 ================================== */
 
@@ -583,7 +668,7 @@ textarea {
   }
 
   #footer ul.navigation {
-    flex-direction: horizontal;
+    flex-direction: row;
   }
   
   /* Cart summary header table */

@@ -32,11 +32,35 @@
     <div id="page">
       <div id="contents">
 
+        <!-- Display the main page slider and the page heading. -->
+        <div id="adbox" class="slider">
+
+          <div class="slides-container">
+
+            {{!-- Slides --}}
+            {{#each content.Slider_Images}}
+            <div class="slide {{#if @first}}active{{/if}}">
+              <img src="images/{{this.image}}" alt="{{this.image_alt}}">
+              <div class="slide-caption">
+                <h1>{{this.title}}</h1>
+                <p>{{this.description}}</p>
+              </div>
+            </div>
+            {{/each}}
+
+          </div>
+
+          <!-- Navigation arrows -->
+          <button class="slider-btn prev">❮</button>
+          <button class="slider-btn next">❯</button>
+
+        </div>
+
         <!-- Display the main page image and the page heading. -->
         <div id="adbox">
           <img src="images/sea-sound.jpg" alt="Img" />
           <h1>{{content.heading}}</h1>
-          <p>{{{content.heading_text}}}</p>
+          <p>{{{content.heading_text}}}</p> 
         </div>
 
         <!-- The Blog block.
@@ -94,6 +118,7 @@
     <!-- Run script in the background to clear the expired session items from the cart-->
     <script src="/javascripts/clearExpiredSession.js"></script>
     <script src="/javascripts/registerAndLogin.js"></script>
+    <script src="/javascripts/slider.js"></script>
     
   </body>
 </html>
