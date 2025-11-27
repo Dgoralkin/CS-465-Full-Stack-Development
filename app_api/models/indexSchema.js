@@ -19,6 +19,8 @@ const mongoose = require('mongoose');
 const indexSchema = new mongoose.Schema({
     heading: { type: String, required: true },
     heading_text: {type: String, required: true },
+    // arrays of objects for the homepage slider
+    Slider_Images: [{ title: String, description: String, image: String, image_alt: String }],
     Latest_Blog: {type: String, required: true },
     // arrays of objects for Blog_Entries
     Blog_Entries: [{ title: String, link: String, date: String, excerpt: String }],
