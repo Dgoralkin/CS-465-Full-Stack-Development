@@ -52,6 +52,28 @@ function showPassword() {
   regPass
 }
 
+// Make a call to api/2fa/setup and setup the 2FA 
+async function setup2FA(session) {
+  try {
+    const response = await fetch('/api/2fa/setup', {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${session.token}`
+      },
+      body: JSON.stringify({ session })
+    });
+
+    const data = await response.json();
+    // console.log("2FA data:", data.message, data.qrCode, data.token);
+
+    return data;
+
+  } catch (err) {
+    console.error("setup2FA error:", err);
+  }
+}
+
 // Make a call to /api/register and register new user via the authenticator 
 async function registerNewUser(registerForm) {
   try {
@@ -238,35 +260,9 @@ async function handleRegister(event) {
   } else {
     alert(result.message);
     return;
-  }
-  
+  }  
 }
 
-// Make a call to api/2fa/setup and setup the 2FA 
-async function setup2FA(session) {
-  try {
-    const response = await fetch('/api/2fa/setup', {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${session.token}`
-      },
-      body: JSON.stringify({ session })
-    });
-
-    const data = await response.json();
-
-    // console.log("2FA data:", data);
-    // console.log("2FA data:", data.qrCode);
-    // console.log("2FA data:", data.token);
-    // console.log("2FA data:", data.message);
-
-    return data;
-
-  } catch (err) {
-    console.error("setup2FA error:", err);
-  }
-}
 
 
 // ===================================

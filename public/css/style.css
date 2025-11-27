@@ -627,6 +627,61 @@ textarea {
   padding: 10px 5px;
 }
 
+/* 2FA Authenticator logo */
+.totp-header {
+  display: flex;
+  align-items: stretch;
+  gap: 15px;
+}
+
+.totp-header img {
+  height: 225px;
+  width: 225px;
+  object-fit: contain;
+}
+
+.totp-text h1,
+.totp-text h2 {
+  margin: 0;
+}
+
+/* 2FA Authenticator form */
+.totp-inputs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.totp-inputs input {
+  width: 45px;
+  height: 60px;
+  font-size: 2rem;
+  text-align: center;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+}
+
+.totp-inputs input:focus {
+  outline: none;
+  border-color: #0078ff;
+}
+
+.totp-submit {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  border: none;
+  background-color: #0066cc;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.totp-submit:hover {
+  background-color: #0055aa;
+}
+
 /* Fix layout on mobile */
 @media (max-width: 768px) {
   .register-login-wrapper h1.page-title {

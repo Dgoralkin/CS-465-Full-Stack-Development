@@ -13,6 +13,9 @@
     - Generates a unique QR code to render on the 2FA/setup page.
     - Sets a short term cookie to be parsed by the browser controller.
     - Returns a message, secret, and the QR code.
+    - Verifies the returned unique six digit code from user.
+    - Updates session cookie and user instance in the database.
+    - Returns 200 OK or 401 response.
 =========================================================================================== */
 
 // Import required modules
@@ -85,9 +88,71 @@ const setup2FA = async (req, res) => {
     }
 };
 
+// Verify the returned 2FA code from user.
+// Update session cookie and user instance in the database.
+// Mark user as registered and authenticated.
 const verify2FA = async (req, res) => {
-    console.log("In verify2FA.............................");
-    res.json({ message: "2FA successfully enabled" });
+
+    try {
+        // Read cookie data from the server
+        const raw_cookie = req.cookies.sessionData;
+
+        // No cookie found, return session false.
+        if (!raw_cookie) {
+            return res.status(401).json({
+                hasSession: false,
+                message: "No cookie found."
+            });
+        }
+
+        // Decode + parse cookie
+        const cookie = JSON.parse(decodeURIComponent(raw_cookie));
+        
+        // Get user instance from the database.
+        const user = await DB_User.findById(cookie.user_id);
+        // console.log("user:", user);
+
+        // Validate the 2FA code from the user.
+        const isValid = speakeasy.totp.verify({
+            secret: user.twoFactorSecret,
+            encoding: "base32",
+            token: req.body.authCode,
+            window: 1
+        });
+
+        if (!isValid) { return res.status(400).json({ message: "Not quiet! Please try again..." }); }
+
+        // Update user object values if code is valid.
+        user.twoFactorEnabled = true;
+        user.isRegistered = true;
+        await user.save();
+
+        // Update the session cookie.
+        const updatedCookie = JSON.parse(raw_cookie);
+        updatedCookie.isAuthenticated = true;
+
+        // Reset cookie with new values.
+        res.cookie("sessionData", JSON.stringify(updatedCookie), {
+            httpOnly: true,
+            secure: true,
+            sameSite: "Lax",
+            path: "/",
+            maxAge: 1000 * 60 * 60 * 24 * 1
+        });
+
+        const message = {
+            status: "2FA verified successfully!",
+            userFname: user.fName,
+            userLname: user.lName,
+        }
+
+        // Return 200 Ok response.
+        return res.status(200).json({ updatedCookie, message });
+        
+    } catch (err) {
+        console.log("In verify2FA, can't verify user.", err);
+        console.error("Error in verify2FA, can't verify user.", err);
+    }
 };
 
 
