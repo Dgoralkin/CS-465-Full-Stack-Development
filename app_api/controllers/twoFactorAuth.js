@@ -120,7 +120,7 @@ const verify2FA = async (req, res) => {
             window: 1
         });
 
-        if (!isValid) { return res.status(400).json({ message: "Not quiet! Please try again..." }); }
+        if (!isValid) { return res.status(400).json({ message: "Not quiet! Check your authentication app and try again..." }); }
 
         // Update user object values if code is valid.
         user.twoFactorEnabled = true;
@@ -130,6 +130,7 @@ const verify2FA = async (req, res) => {
         // Update the session cookie.
         const updatedCookie = JSON.parse(raw_cookie);
         updatedCookie.isAuthenticated = true;
+        updatedCookie.isLoggedIn = true;
 
         // Reset cookie with new values.
         res.cookie("sessionData", JSON.stringify(updatedCookie), {

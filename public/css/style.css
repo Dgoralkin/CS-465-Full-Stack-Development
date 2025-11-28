@@ -640,6 +640,12 @@ textarea {
   object-fit: contain;
 }
 
+#TOTP_logoInLogin {
+  height: 75px;
+  width: 75px;
+  object-fit: contain;
+}
+
 .totp-text h1,
 .totp-text h2 {
   margin: 0;
@@ -680,6 +686,11 @@ textarea {
 
 .totp-submit:hover {
   background-color: #0055aa;
+}
+
+/* Hide the TOTP form by default */
+#totp-header {
+  display: none;
 }
 
 /* Fix layout on mobile */

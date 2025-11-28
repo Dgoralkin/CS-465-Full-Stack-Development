@@ -18,24 +18,20 @@ module.exports = function authStatus(req, res, next) {
   // console.log("sessionCookie: ", sessionCookie);
 
   let isLoggedIn = false;
-  let isUserGuest = null;
 
   // If cookie set, parse and reset global values.
   if (sessionCookie) {
     try {
       const session = JSON.parse(sessionCookie);
       // user logged in if a valid token exists in the session
-      isLoggedIn = !!session.token;
-      // get user status (guest/registered)
-      isUserGuest = !session.isGuest;
-      // console.log("session.isGuest: ",  session.isGuest);
+      isLoggedIn = session.isLoggedIn;
+      console.log("isLoggedIn:", isLoggedIn);
     } catch (err) {
-      console.error("Invalid session cookie", err);
+      // console.error("Invalid session cookie", err);
     }
   }
 
   // Update variables in the session.
   res.locals.isLoggedIn = isLoggedIn;
-  res.locals.isGuest = isUserGuest;
   next();
 };

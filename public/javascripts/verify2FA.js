@@ -1,5 +1,5 @@
 /* ====================================================================
-  File: setup2FA.hbs
+  File: setup2FA.js
   Description: This is the combined, user side registration and login page logic.
   Author: Daniel Gorelkin
   Version: 1.1
@@ -18,30 +18,6 @@
 // =================================================================================================
 // Functions to validate form completeness and correctness to prevent incomplete URI form submission
 // =================================================================================================
-
-// Make a call to /api/register and register new user via the authenticator 
-async function registerNewUser(registerForm) {
-  try {
-    const response = await fetch('/api/register', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      // Include user details in the body as a JSON object.
-      body: JSON.stringify(registerForm)
-    });
-
-    // Read response from the controller and display a confirmation message in a pop out window.
-    // If server returned an error (status 409), means that a user with same email already exists in DB.
-    // Display alert message to acknowledge user and return to login page.
-    const result = await response.json();
-    window.alert(result.message || 'Welcome!');
-    return response;
-  } 
-  catch (err) {
-    // Return a fake error-like response to avoid undefined
-    console.error("Network or server error:", err);
-    return { ok: false, status: 0, json: async () => ({ message: "Network error. Try again later." }) };
-  }
-}
 
 // Make a call to the server @ route /api/2fa/verify to verify the provided response code from user.
 async function verify2FA(authCode) {
