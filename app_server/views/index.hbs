@@ -33,7 +33,7 @@
       <div id="contents">
 
         <!-- Display the main page slider and the page heading. -->
-        <div id="adbox" class="slider">
+        <div id="hero-slider" class="slider">
 
           <div class="slides-container">
 
@@ -57,7 +57,7 @@
         </div>
 
         <!-- Display the main page image and the page heading. -->
-        <div id="adbox">
+        <div id="hero-adbox">
           <img src="images/sea-sound.jpg" alt="Img" />
           <h1>{{content.heading}}</h1>
           <p>{{{content.heading_text}}}</p> 
@@ -101,11 +101,23 @@
         </div>
 
         <!-- The sidebar provides additional pages navigation functionality via images -->
-        <div id="sidebar">
-          <div class="section"><a href="rooms"><img src="images/rooms.png" alt="Img" /></a></div>
-          <div class="section"><a href="travel"><img src="images/dive-site.png" alt="Img"/></a></div>
-          <div class="section"><a href="meals"><img src="images/food.png" alt="Img" /></a></div>
+        <div id="sidebar" class="sidebar-modern">
+          <a href="rooms" class="sidebar-card">
+            <img src="images/rooms.png" alt="Rooms">
+            <span>Rooms</span>
+          </a>
+
+          <a href="travel" class="sidebar-card">
+            <img src="images/dive-site.png" alt="Travel">
+            <span>Travel</span>
+          </a>
+
+          <a href="meals" class="sidebar-card">
+            <img src="images/food.png" alt="Meals">
+            <span>Meals</span>
+          </a>
         </div>
+        
       </div>
     </div>
 

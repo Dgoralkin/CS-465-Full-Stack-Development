@@ -25,7 +25,7 @@ module.exports = function authStatus(req, res, next) {
       const session = JSON.parse(sessionCookie);
       // user logged in if a valid token exists in the session
       isLoggedIn = session.isLoggedIn;
-      console.log("isLoggedIn:", isLoggedIn);
+      // console.log("isLoggedIn:", isLoggedIn);
     } catch (err) {
       // console.error("Invalid session cookie", err);
     }

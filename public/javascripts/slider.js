@@ -12,7 +12,7 @@
 ===================================================================== */
 
 document.addEventListener("DOMContentLoaded", () => {
-  const slides = document.querySelectorAll("#adbox .slide");
+  const slides = document.querySelectorAll("#hero-slider .slide");
   const nextBtn = document.querySelector(".slider-btn.next");
   const prevBtn = document.querySelector(".slider-btn.prev");
 
