@@ -40,6 +40,7 @@ const setTokenAndCookie = (user, user_id, res) => {
         user_id: user_id,
         isGuest: false,
         isRegistered: true,
+        isLoggedIn: false,
         isAuthenticated: false
     };
 
@@ -127,14 +128,25 @@ const register = async (req, res) => {
 
         // Handle a guest to -> registered user scenario session upgrade.
         // If a call comes while carrying guest user id, and the user is not registered yet to the website.
-        if (guestUser_id && !isRegistered) {
+        if (guestUser_id && isRegistered) {
             try {
                 // Update all guest records/items in the cart by updating them with the freshly registered user id.
                 const updatedCartItems = await DB_Cart.updateMany(
                     { user_id: guestUser_id },        // find guest's cart items
                     { $set: { user_id: newUser_id }}  // assign to new user
                 );
-                // console.log("updatedCartItems: ", updatedCartItems);
+                console.log("updatedCartItems: ", updatedCartItems);
+
+                const updateUserStatus = await DB_User.findOneAndUpdate(
+                    { _id: newUser_id },
+                    { $set: { isRegistered: true } },
+                    { new: true }
+                );
+                console.log("updateUserStatus: ", updateUserStatus);
+
+                // Delete guestUser_id from database as all his cart items were transferred to the newUser_id.
+                const removeGuestUser = await DB_User.findOneAndDelete({ _id: guestUser_id }).exec();
+                console.log("removeGuestUser:", removeGuestUser);
 
             } catch (err) {
                 console.error("Update cart owner error:", err);
@@ -147,11 +159,11 @@ const register = async (req, res) => {
         const token = setTokenAndCookie(user, newUser_id, res);
 
         // Remove guest user from database as the new user setup is completed.
-        if (guestUser_id && !isRegistered) {
+        /*if (guestUser_id && !isRegistered) {
             // Delete guestUser_id from database as all his cart items were transferred to the newUser_id.
             const removeGuestUser = await DB_User.findOneAndDelete({ _id: guestUser_id }).exec();
             // console.log("removeGuestUser:", removeGuestUser);
-        }
+        }*/
 
         // Return and proceed to login or to the second verification step.
         // Prepare text to be displayed in a alert window.
@@ -189,6 +201,15 @@ const login = async (req, res) => {
         // Generate a JSON Web Token for the user for 1H if credentials are valid and return token.
         const token = user.generateJWT();
         // console.log("Username: ", req.body.email, "authenticated :-)", token);
+        
+        // Check if user has a valid 2FA
+        const twoFactorEnabled = user.twoFactorEnabled
+
+        // Define which type of user is logged in.
+        function twoFactorStepRequired(twoFactorEnabled) {
+            if (!twoFactorEnabled) { return true; }
+            return false;
+        }
 
         // Store the token in a cookie so authStatus could read it and update the login/logout button.
         res.cookie("sessionData", JSON.stringify({
@@ -197,7 +218,8 @@ const login = async (req, res) => {
             user_id: user._id,
             isGuest: false,
             isRegistered: true,
-            isAuthenticated: false
+            isLoggedIn: twoFactorStepRequired(twoFactorEnabled),
+            isAuthenticated: twoFactorEnabled
         }), {
             httpOnly: true,
             secure: true,
@@ -205,12 +227,15 @@ const login = async (req, res) => {
             path: "/",
             maxAge: 1000 * 60 * 60 * 24 // 1 day
         });
-        return res.status(200).json({ token, message: `Welcome ${user.fName}!` });
+
+        // Return status 200/OK
+        return res.status(200).json({ token, twoFactorEnabled, message: `Welcome ${user.fName} ${user.lName}!` });
 
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
 };
+
 
 // Logout signed in user controller. Signs user out.
 const logout = async (req, res) => {
@@ -227,6 +252,7 @@ const logout = async (req, res) => {
         return res.status(500).json({ error: err.message });
     }
 };
+
 
 // Helper function for authenticateJWT. Safely checks if a token exist in the header.
 const verifyToken = (token) => {
@@ -258,6 +284,7 @@ const authenticateJWT = (req, res, next) => {
     next();
 };
 
+
 // Creates a temporary user account for "guest" users managed by unique user _id.
 // Create a signed session token for the guest user to be stored in a cookie.
 // Return the new guest user object and session details.
@@ -281,6 +308,7 @@ const registerGuest = async (req, res) => {
             user_id: guestUser._id,
             isGuest: true,
             isRegistered: false,
+            isLoggedIn: false,
             isAuthenticated: false
         };
 
@@ -300,6 +328,7 @@ const registerGuest = async (req, res) => {
         return res.status(500).json({ error: err.message });
     }
 };
+
 
 // Defines the endpoint for 'api/checkSession', for client side calls checking if a session exist.
 // Returns JSON with session details or response error.
@@ -346,6 +375,7 @@ const checkSession = async (req, res) => {
         });
     }
 };
+
 
 // Export the controller methods
 module.exports = {

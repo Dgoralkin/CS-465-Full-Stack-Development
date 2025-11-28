@@ -125,10 +125,43 @@ async function loginUser(loginForm) {
     // Display alert message to acknowledge user and return to login page.
     const result = await response.json();
     
+
+    // Check and see if the user enabled his two factor authentication.
+    // If 2FA enabled, unhide the TOTP input form and send a verification request to server controller at api/2fa/verify
+    if (result.twoFactorEnabled) {
+      console.log("twoFactorEnabled", result.twoFactorEnabled);
+
+      
+      // Event listener for un-hiding the TOTP form after the email and password submitted.
+      // and hiding the login button
+      document.querySelector("#totp-header").style.display = "block";
+      document.querySelector("#loginBtn").style.display = "none";
+      document.querySelector("#recoverPswrd").innerHTML = "";
+
+      // ====================================================================================
+      //                                                                                    //
+      //                                                                                    //
+      //    Functionality for the 2FA form and all of its methods inherited and running     //
+      //    directly from the verify2FA.js file as it is reused here and in the             //
+      //    2FA TOTP setup page setup2FA.hbs                                                //
+      //                                                                                    //
+      //    After successful 2FA verification,                                              //
+      //    Display alert / acknowledgement message, update the login/logout button,        //
+      //    and redirect user to the homepage, e.g., window.location.href = "/login";       //
+      //                                                                                    //
+      //                                                                                    //
+      // ====================================================================================
+
+      // User successfully entered email, password, and the TOTP authentication code.
+      return;
+    }
+
+    // TwoFactor Is Not Enabled case:
+    // Display alert / acknowledgement message and redirect user to the homepage.
     window.alert(result.message || 'Welcome!');
 
     // Trigger a reload so header updates based on session cookie and trigger the login/logout button change.
-    window.location.reload();
+    window.location.href = "/login";
     return response;
 
   } 
@@ -161,6 +194,7 @@ async function logoutUser() {
   }
 }
 
+
 // =========================================================
 // LOGIN FORM HANDLER:
 // Validates all fields are filled and prepares JSON object.
@@ -191,9 +225,6 @@ async function handleLogin(event) {
 
   // Return back to the login page if couldn't sign in user because he doesn't exist or password doesn't match.
   if (!response.ok) { return response; }
-
-  // Account created successfully. Activate Online one-time password generator.
-  console.log("IMPLEMENT: Returned to handleLogin() from loginUser()");
 }
 
 
@@ -237,7 +268,7 @@ async function handleRegister(event) {
     lName: document.getElementById("lastName").value.trim(),
     email: document.getElementById("regEmail").value.trim(),
     password: document.getElementById("regPass").value.trim(),
-    isRegistered: isRegistered,                    // new unregistered user
+    isRegistered: true,                    // new unregistered user
     isAdmin: false                                 // user role
   };
   // console.log("Register form:", registerForm);
@@ -251,7 +282,7 @@ async function handleRegister(event) {
   // User account created successfully. Get permission to set up the 2FA auth via a confirmation alert.
   if (confirm(`${userRegistered.message}\nEnable 2-Factor Authentication now?`)) {
 
-    /// Set up Online One-Time Password authentication (TOTP). Pass session data.
+    // Set up Online One-Time Password authentication (TOTP). Pass session data.
     const session = await setup2FA(data);
 
     // Redirect to rendering route
@@ -264,16 +295,16 @@ async function handleRegister(event) {
 }
 
 
-
-// ===================================
-// Event listeners to fetch form data.
-// ===================================
-
+// ====================================================================================
+// Event listeners to fetch login and register data forms and the show password button.
+// ====================================================================================
 document.getElementById("loginForm").addEventListener("submit", handleLogin);             // Submit login form
 document.getElementById("registerForm").addEventListener("submit", handleRegister);       // Submit register form
 document.getElementById("showPassword").addEventListener("change", showPassword);         // Hide/unhide password
 
-// 
+// ====================================================================================
+// Event listener for the logout button.
+// ====================================================================================
 document.addEventListener('DOMContentLoaded', () => {
   const logoutBtn = document.getElementById("logoutBtn");
   if (logoutBtn) {

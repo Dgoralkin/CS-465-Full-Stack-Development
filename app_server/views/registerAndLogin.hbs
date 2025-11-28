@@ -31,10 +31,43 @@
 
                 <button type="submit" id="loginBtn" class="btn login-submit-btn w-100">Log in</button>
 
-                <a href="#" class="forgot-link mt-3 d-block text-center">Forgot your password?</a>
+                <a href="#" id="recoverPswrd" class="forgot-link mt-3 d-block text-center">Forgot your password?</a>
 
               </div>
             </form>
+
+
+            <div class="totp-header" id="totp-header">
+              <img src="/images/TOTP_logo.jpg" alt="Google_TOTP_logo" id="TOTP_logoInLogin" class="totp-icon">
+              
+              <div class="totp-text">
+                <h1 id="2faForm_header_h1">Got your code?</h1>
+                <h2 id="2faForm_header_h2">Enter your 6 digit code here:</h2>
+
+                <!-- Read to verify TOTP authentication code from user via form -->
+                <div style="text-align:center; margin:20px 0;">
+
+                  <form id="2faForm" class="totp-form">
+                    <div class="totp-inputs">
+                      <input type="text" name="d1" maxlength="1" inputmode="numeric" pattern="[0-9]*" required>
+                      <input type="text" name="d2" maxlength="1" inputmode="numeric" pattern="[0-9]*" required>
+                      <input type="text" name="d3" maxlength="1" inputmode="numeric" pattern="[0-9]*" required>
+                      <input type="text" name="d4" maxlength="1" inputmode="numeric" pattern="[0-9]*" required>
+                      <input type="text" name="d5" maxlength="1" inputmode="numeric" pattern="[0-9]*" required>
+                      <input type="text" name="d6" maxlength="1" inputmode="numeric" pattern="[0-9]*" required>
+                    </div>
+
+                    <button type="submit" id="submit2faBtn" class="totp-submit">Verify Code</button>
+                  </form>
+
+                </div>
+
+              </div>
+            </div>
+
+
+
+
           </div>
 
           <!-- =================== RIGHT COLUMN: REGISTER FORM =================== -->
@@ -89,6 +122,7 @@
 
     </div>
 
+    <script src="/javascripts/verify2FA.js"></script>
     <script src="/javascripts/registerAndLogin.js"></script>
   </body>
 </html>
